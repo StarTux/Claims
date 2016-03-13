@@ -1,0 +1,74 @@
+name: Claims
+description: Make claims to protect your property
+author: StarTux
+version: 0.1
+main: com.winthier.claims.bukkit.BukkitClaimsPlugin
+depend: [ PlayerCache, Vault ]
+commands:
+  claim:
+    aliases: [ c, claims ]
+    description: User interface
+    permission: claims.claim
+  claimadmin:
+    aliases: [ ca ]
+    description: Admin interface
+    permission: claims.admin
+  trust:
+    description: Give build trust
+    permission: claims.claim
+    usage: |-
+      Give trust to build in your claim.
+      /<command> <player> - Trust a player
+      /<command> * - Trust everyone
+  containertrust:
+    description: Give container trust
+    permission: claims.claim
+    usage: |-
+      Give trust to open containers in your claim
+      /<command> <player> - Trust a player
+      /<command> * - Trust everyone
+  accesstrust:
+    description: Give access trust
+    permission: claims.claim
+    usage: |-
+      Give trust to use some of your blocks
+      /<command> <player> - Trust a player
+      /<command> * - Trust everyone
+  permissiontrust:
+    description: Give permission trust
+    permission: claims.claim
+    usage: |-
+      Allow someone to trust others and make subclaims
+      /<command> <player> - Trust a player
+      /<command> * - Trust everyone
+  untrust:
+    description: Revoke trust
+    permission: claims.claim
+    usage: |-
+      /<command> <player> - Revoke all trust from a player
+      /<command> * - Revoke trust to everyone
+  buyclaimblocks:
+    description: Buy more claim blocks
+    permission: claims.claim
+    usage: |-
+      /<command> <amount>
+  ignoreclaims:
+    description: Give permission trust
+    permission: claims.claim
+    usage: |-
+      /<command> - toggle ignore claims
+      /<command> on|off - turn ignore claims on or off
+  stuck:
+    description: Get out of a claim you are stuck in
+    permission: claims.stuck
+    usage: /<command>
+permissions:
+  claims.claim:
+    description: Use the user interface
+    default: op
+  claims.stuck:
+    description: Use /stuck
+    default: op
+  claims.admin:
+    description: Use the admin interface
+    default: op
