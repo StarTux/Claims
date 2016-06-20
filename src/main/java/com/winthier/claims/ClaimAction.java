@@ -147,7 +147,11 @@ public class ClaimAction {
             sender.sendMessage("&3&lClaims&c&o Could not expand claim because %s.", cee.getMessage());
             return;
         }
-        sender.sendMessage("&3&lClaims&r&o Claim expanded %d blocks. Cost %d claim blocks.", amount, newClaim.getArea() - oldClaim.getArea());
+        if (amount > 0) {
+            sender.sendMessage("&3&lClaims&r&o Claim expanded %d blocks. Cost %d claim blocks.", amount, newClaim.getArea() - oldClaim.getArea());
+        } else {
+            sender.sendMessage("&3&lClaims&r&o Claim inset %d blocks. Refunded %d claim blocks.", amount, oldClaim.getArea() - newClaim.getArea());
+        }
         sender.showTitle("", "&aClaim resized");
         PlayerInfo.forPlayer(sender).setCurrentClaim(newClaim); // ???
     }
@@ -158,6 +162,9 @@ public class ClaimAction {
      * valid claim.
      */
     public Claim resizeClaim(Player player, Claim oldClaim, Rectangle rectangle) throws ClaimEditException {
+        if (rectangle.getWidth() < 1 || rectangle.getHeight() < 1) {
+            throw ClaimEditException.ErrorType.CLAIM_TOO_SMALL.create();
+        }
         PlayerInfo info = PlayerInfo.forPlayer(player);
         Claim newClaim = oldClaim.copy();
         newClaim.setRectangle(rectangle);
