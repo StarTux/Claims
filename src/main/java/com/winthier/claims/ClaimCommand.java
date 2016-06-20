@@ -131,7 +131,7 @@ public class ClaimCommand {
             try {
                 amount = Integer.parseInt(args[1]);
             } catch (NumberFormatException nfe) {}
-            if (amount <= 0) throw new CommandException("Amount expected, got: " + amountArg);
+            if (amount == 0) throw new CommandException("Amount expected, got: " + amountArg);
             CardinalDirection direction = null;
             if (directionArg != null) {
                 direction = CardinalDirection.fromString(directionArg);
