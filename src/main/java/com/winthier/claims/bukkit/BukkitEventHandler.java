@@ -39,6 +39,7 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Openable;
@@ -409,6 +410,7 @@ public class BukkitEventHandler implements Listener {
     public void onPlayerInteractShovel(PlayerInteractEvent event) {
         if (event.getAction() != org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK &&
             event.getAction() != org.bukkit.event.block.Action.RIGHT_CLICK_AIR) return;
+        if (event.getHand() != EquipmentSlot.HAND) return;
         final Player player = event.getPlayer();
         if (player.getInventory().getItemInMainHand().getType() != Material.GOLD_SPADE) return;
         event.setCancelled(true);
