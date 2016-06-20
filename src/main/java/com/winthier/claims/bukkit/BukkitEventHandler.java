@@ -278,18 +278,18 @@ public class BukkitEventHandler implements Listener {
 
     /* Event handlers  * * * * * * * * * * * * * * * * * * * * */
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onBlockBreak(BlockBreakEvent event) {
         autoCheckAction(event.getPlayer(), event.getBlock().getLocation(), Action.BUILD, event);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onBlockPlace(BlockPlaceEvent event) {
         autoCheckAction(event.getPlayer(), event.getBlock().getLocation(), Action.BUILD, event);
     }
 
     // Frost Walker
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onEntityBlockForm(EntityBlockFormEvent event) {
         if (!(event.getEntity() instanceof Player)) return;
         final Claim claim = plugin.getClaimAt(event.getBlock().getLocation());
@@ -298,7 +298,7 @@ public class BukkitEventHandler implements Listener {
         if (!claim.checkTrust(player.getUniqueId(), TrustType.BUILD)) event.setCancelled(true);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         // Get entity
         final Entity entity = event.getEntity();
@@ -317,7 +317,7 @@ public class BukkitEventHandler implements Listener {
         autoCheckAction(player, entity.getLocation(), Action.DAMAGE_ENTITY, event);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         final Player player = event.getPlayer();
         final Entity entity = event.getRightClicked();
@@ -352,7 +352,7 @@ public class BukkitEventHandler implements Listener {
     }
 
     // Should this just be the same as onPlayerInteractEntity() ?
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
         final Entity entity = event.getRightClicked();
         if (entity.getType() != EntityType.ARMOR_STAND) return;
@@ -362,7 +362,7 @@ public class BukkitEventHandler implements Listener {
         autoCheckAction(player, entity.getLocation(), Action.TRANSFORM_ENTITY, event);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onPlayerArmorStandManipulate(PlayerArmorStandManipulateEvent event) {
         final Player player = event.getPlayer();
         final Entity entity = event.getRightClicked();
@@ -373,7 +373,7 @@ public class BukkitEventHandler implements Listener {
      * Make sure to whitelist anything that should be caught here
      * in the PlayerInteractEntityEvent.
      */
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onPlayerShearEntity(PlayerShearEntityEvent event) {
         final Player player = event.getPlayer();
         final Entity entity = event.getEntity();
@@ -382,7 +382,7 @@ public class BukkitEventHandler implements Listener {
         autoCheckAction(player, entity.getLocation(), action, event);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onEntityMount(EntityMountEvent event) {
         if (!(event.getEntity() instanceof Player)) return;
         final Player player = (Player)event.getEntity();
@@ -398,7 +398,7 @@ public class BukkitEventHandler implements Listener {
         autoCheckAction(player, mount.getLocation(), Action.MOUNT_ENTITY, event);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onPlayerLeashEntity(PlayerLeashEntityEvent event) {
         final Player player = event.getPlayer();
         final Entity entity = event.getEntity();
@@ -406,7 +406,7 @@ public class BukkitEventHandler implements Listener {
         autoCheckAction(player, entity.getLocation(), Action.LEASH_ENTITY, event);
     }
 
-    @EventHandler(ignoreCancelled = false, priority = EventPriority.NORMAL)
+    @EventHandler(ignoreCancelled = false, priority = EventPriority.LOWEST)
     public void onPlayerInteractShovel(PlayerInteractEvent event) {
         if (event.getAction() != org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK &&
             event.getAction() != org.bukkit.event.block.Action.RIGHT_CLICK_AIR) return;
@@ -424,7 +424,7 @@ public class BukkitEventHandler implements Listener {
         return;
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onPlayerInteract(PlayerInteractEvent event) {
         final Player player = event.getPlayer();
         final Block block = event.getClickedBlock();
@@ -486,29 +486,29 @@ public class BukkitEventHandler implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onHangingBreakByEntity(HangingBreakByEntityEvent event) {
         if (!(event.getRemover() instanceof Player)) return;
         final Player player = (Player)event.getRemover();
         autoCheckAction(player, event.getEntity().getLocation(), Action.BUILD, event);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onHangingPlace(HangingPlaceEvent event) {
         autoCheckAction(event.getPlayer(), event.getEntity().getLocation(), Action.BUILD, event);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onPlayerBucketEmpty(PlayerBucketEmptyEvent event) {
         autoCheckAction(event.getPlayer(), event.getBlockClicked().getLocation(), Action.BUILD, event);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onPlayerBucketFill(PlayerBucketFillEvent event) {
         autoCheckAction(event.getPlayer(), event.getBlockClicked().getLocation(), Action.BUILD, event);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onCreatureSpawn(CreatureSpawnEvent event) {
         final Entity entity = event.getEntity();
         if (isHostile(entity)) {
@@ -518,12 +518,12 @@ public class BukkitEventHandler implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onPlayerJoin(PlayerJoinEvent event) {
         Claims.getInstance().onPlayerJoin(plugin.createPlayer(event.getPlayer()));
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onPlayerQuit(PlayerQuitEvent event) {
         Claims.getInstance().onPlayerQuit(plugin.createPlayer(event.getPlayer()));
     }
