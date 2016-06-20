@@ -453,6 +453,7 @@ public class Claims {
     }
 
     public boolean isClaimTooSmall(Claim claim) {
+        if (claim.getWidth() < 1 || claim.getHeight() < 1) return true;
         if (claim.hasSuperClaim()) return false;
         return claim.getWidth() < 8 || claim.getHeight() < 8;
     }
