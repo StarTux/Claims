@@ -33,7 +33,7 @@ public class ClaimOptions {
         ClaimOption.booleanOption("pvp", "PvP", "Player vs player combat", "false"),
         ClaimOption.booleanOption("creeperDamage", "Creeper Damage", "Creeper Explosions break blocks", "false"),
         ClaimOption.booleanOption("tntDamage", "TNT Damage", "Exploding TNT breaks blocks", "true"),
-        ClaimOption.booleanOption("fireSpread", "Fire Spread", "Player will spread and burn blocks", "false")
+        ClaimOption.booleanOption("fireSpread", "Fire Spread", "Fire will spread and burn blocks", "false")
         );
     
     private Boolean adminClaim = null;
