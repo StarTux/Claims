@@ -48,11 +48,11 @@ public class ClaimTool {
                 message.add(JSON.commandRunButton("&4[abort]", "&4Click to abort\n&4resizing this\n&4" + claim.humanClaimHierarchyType() + ".", "/claim tool abort"));
                 message.add(Strings.format("&o."));
                 player.tellRaw(message);
-            } else {
-                Claims.getInstance().getActions().info(player, claim);
-                if (claim.isOwner(player.getUuid())) {
-                    player.sendMessage("&3&lClaims&r&o Click the same block again to make a subclaim.");
-                }
+            }
+        } else {
+            Claims.getInstance().getActions().info(player, claim);
+            if (claim.checkTrust(player.getUuid(), TrustType.PERMISSION)) {
+                player.sendMessage("&3&lClaims&r&o Click the same block again to make a subclaim.");
             }
         }
         this.location = location;
