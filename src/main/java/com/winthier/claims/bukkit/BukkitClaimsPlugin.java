@@ -214,6 +214,7 @@ public class BukkitClaimsPlugin extends JavaPlugin {
         return new org.bukkit.Location(world, location.getX(), location.getY(), location.getZ());
     }
 
+    // TODO remove, reformat to Msg...
     public String format(String string, Object... args) {
         string = ChatColor.translateAlternateColorCodes('&', string);
         if (args.length > 0) string = String.format(string, args);

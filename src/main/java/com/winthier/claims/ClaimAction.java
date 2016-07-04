@@ -1,6 +1,7 @@
 package com.winthier.claims;
 
 import com.winthier.claims.util.JSON;
+import com.winthier.claims.util.Msg;
 import com.winthier.claims.util.Players;
 import com.winthier.claims.util.Strings;
 import java.util.ArrayList;
@@ -26,11 +27,11 @@ public class ClaimAction {
         claim.highlightFull(sender);
         sender.sendMessage("");
         sender.sendMessage("&3&l%s&r&o Info", Strings.upperCaseWord(claim.humanClaimHierarchyType()));
-        sender.sendMessage("&3Owner&b %s", claim.isAdminClaim() ? "an admin" : claim.getOwnerName());
-        sender.sendMessage("&3Coordinates&b %d&3,&b%d&3 - &b%d&3,&b%d&3", claim.getWestBorder(), claim.getNorthBorder(), claim.getEastBorder(), claim.getSouthBorder());
+        sender.sendMessage(" &oOwner&b %s", claim.isAdminClaim() ? "an admin" : claim.getOwnerName());
+        sender.sendMessage(" &oCoordinates&b %d&3,&b%d&3 - &b%d&3,&b%d&3", claim.getWestBorder(), claim.getNorthBorder(), claim.getEastBorder(), claim.getSouthBorder());
         if (claim.checkTrust(sender.getUuid(), TrustType.PERMISSION)) {
-            sender.sendMessage("&3Created&b %s", Strings.formatDate(claim.getCreationTime()));
-            sender.sendMessage("&3Size&b %d&3x&b%d &3(&b%d blocks&3)", claim.getWidth(), claim.getHeight(), claim.getArea());
+            sender.sendMessage(" &oCreated&b %s", Strings.formatDate(claim.getCreationTime()));
+            sender.sendMessage(" &oSize&b %d&3x&b%d &3(&b%d blocks&3)", claim.getWidth(), claim.getHeight(), claim.getArea());
             // If the player has permission trust, show him permission info and options
             boolean trustedHeader = false;
             for (TrustType trust : TrustType.values()) {
@@ -46,19 +47,48 @@ public class ClaimAction {
                     sender.sendMessage("&3&m &3 %s&b %s", Strings.upperCaseWord(trust.human), Strings.fold(names, ", "));
                 }
             }
-            List<Object> message = new ArrayList<>();
-            message.add("");
-            message.add(JSON.commandSuggestButton("&b[Trust]", "&3Click to trust\n&3someone to build\n&3in this " + claim.humanClaimHierarchyType() + ".", "/claim trust "));
-            message.add(" ");
-            message.add(JSON.commandSuggestButton("&b[Grow]", "&3Click to expand\n&3this " + claim.humanClaimHierarchyType() + ".", "/claim grow 8"));
-            message.add(" ");
-            message.add(JSON.commandSuggestButton("&b[Sub]", "&3Click to create\n&3a subclaim\n&3around yourself.", "/claim sub"));
-            if (claim.isOwner(sender.getUuid())) {
-                // Only owners can abandon
-                message.add(" ");
-                message.add(JSON.commandSuggestButton("&4[Abandon]", "&4Click to abandon\n&4this " + claim.humanClaimHierarchyType() + ".", "/claim abandon"));
+            List<Object> json = new ArrayList<>();
+            json.add(Msg.format(" &oTrust"));
+            boolean sendTrustMessage = false;
+            if (claim.checkTrust(sender.getUuid(), TrustType.BUILD)) {
+                json.add(" ");
+                json.add(Msg.button("&r[&9Build&r]", "&a/Trust <Player>\nTrust someone to build\nin this " + claim.humanClaimHierarchyType() + ".", "/Trust "));
+                sendTrustMessage = true;
             }
-            sender.tellRaw(message);
+            if (claim.checkTrust(sender.getUuid(), TrustType.CONTAINER)) {
+                json.add(" ");
+                json.add(Msg.button("&r[&9Container&r]", "&a/ContainerTrust <player>\nTrust someone to open\ncontainers in this\n" + claim.humanClaimHierarchyType() + ".", "/ContainerTrust "));
+                sendTrustMessage = true;
+            }
+            if (claim.checkTrust(sender.getUuid(), TrustType.ACCESS)) {
+                json.add(" ");
+                json.add(Msg.button("&r[&9Access&r]", "&a/AccessTrust <player>\nTrust someone to use\nbuttons in this\n" + claim.humanClaimHierarchyType() + ".", "/AccessTrust "));
+                sendTrustMessage = true;
+            }
+            if (claim.isOwner(sender.getUuid())) {
+                json.add(" ");
+                json.add(Msg.button("&r[&ePerm&r]", "&a/PermissionTrust <player>\nTrust someone to make\nsubclaims in this\n" + claim.humanClaimHierarchyType() + " and also\ntrust other with build\npermissions they hold\nthemselves.", "/PermissionTrust "));
+                sendTrustMessage = true;
+            }
+            if (sendTrustMessage) {
+                json.add(" ");
+                json.add(Msg.button("&r[&4Untrust&r]", "&a/Untrust <player>\nUntrust somebody from\nthis " + claim.humanClaimHierarchyType() + ".", "/Untrust "));
+                sender.tellRaw(json);
+            }
+            json.clear();
+            json.add(Msg.format(" &oChange"));
+            json.add(" ");
+            json.add(Msg.button("&r[&aSub]", "&a/Claim Sub\nCreate a subclaim\naround yourself.", "/Claim Sub "));
+            if (claim.isOwner(sender.getUuid())) {
+                // Only owners can abandon, change size and settings
+                json.add(" ");
+                json.add(Msg.button("&r[&aGrow&r]", "&a/Claim Grow <Amount>\n&a[North|East|South|West]\nExpand this " + claim.humanClaimHierarchyType() + " in any\ndirection.", "/Claim Grow "));
+                json.add(" ");
+                json.add(Msg.button("&r[&aSet&r]", "&a/Claim Set\nChange settings for\nthis " + claim.humanClaimHierarchyType() + ".", "/Claim Set"));
+                json.add(" ");
+                json.add(Msg.button("&r[&4Abandon&r]", "&a/Claim Abandon\nAbandon this " + claim.humanClaimHierarchyType() + ".", "/Claim Abandon "));
+            }
+            sender.tellRaw(json);
         }
         sender.sendMessage("");
         return true;

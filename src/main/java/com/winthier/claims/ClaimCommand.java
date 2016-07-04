@@ -1,6 +1,7 @@
 package com.winthier.claims;
 
 import com.winthier.claims.util.JSON;
+import com.winthier.claims.util.Msg;
 import com.winthier.claims.util.Players;
 import com.winthier.claims.util.Strings;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.UUID;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.text.WordUtils;
+import org.bukkit.ChatColor;
 
 // TODO clean this up. This file should only parse player
 // input. Any effective work should be done in ClaimActions.
@@ -40,7 +42,7 @@ public class ClaimCommand {
         player.sendMessage("&3&lClaims&r&o Help");
         List<Object> msg = new ArrayList<>();
         msg.add(claims.format("&oInfo"));
-        msgAdd(msg, "Me", "View your claims summary", "Claim Me");
+        msgAdd(msg, "List", "View your claims summary", "Claim Me");
         msgAdd(msg, "Info", "View info about current claim", "Claim Info");
         msgSend(msg, player);
         msg.add(claims.format("&oCreate"));
@@ -161,7 +163,7 @@ public class ClaimCommand {
             trust(sender, TrustType.PERMISSION, args[1]);
         } else if (args.length == 2 && args[0].equalsIgnoreCase("Untrust")) {
             untrust(sender, args[1]);
-        } else if (args.length == 1 && args[0].equalsIgnoreCase("Me")) {
+        } else if (args.length == 1 && args[0].equalsIgnoreCase("List")) {
             List<Claim> playerClaims = claims.getPlayerClaims(sender.getUuid());
             List<String> claimsList = new ArrayList<>(playerClaims.size());
             for (Claim claim : playerClaims) {
@@ -183,9 +185,62 @@ public class ClaimCommand {
             } else {
                 usage(sender);
             }
+        } else if ((args.length == 1 || args.length == 3) && args[0].equalsIgnoreCase("Set")) {
+            Claim claim = claims.getClaimAt(sender.getLocation());
+            if (claim == null) throw new CommandException("Stand in the claim you would like to configure");
+            claim = claim.getTopLevelClaim();
+            if (!claim.isOwner(sender.getUuid())) throw new CommandException("The top level claim does not belong to you");
+            if (args.length == 3) {
+                String optionKey = args[1];
+                String optionValue = args[2];
+                if (claimOptionIsValid(optionKey, optionValue)) {
+                    claim.getOptions().setOption(optionKey, optionValue);
+                    claims.saveClaims();
+                }
+            }
+            showClaimOptions(sender, claim);
         } else {
             usage(sender);
         }
+    }
+
+    boolean claimOptionIsValid(String key, String value) {
+        for (ClaimOption claimOption: ClaimOptions.PUBLIC_OPTIONS) {
+            if (claimOption.key.equals(key)) {
+                for (ClaimOption.State state: claimOption.states) {
+                    if (state.value.equals(value)) return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    void showClaimOptions(Player sender, Claim claim) {
+        sender.sendMessage("");
+        sender.sendMessage("&3&lClaim&r Settings");
+        for (ClaimOption claimOption: ClaimOptions.PUBLIC_OPTIONS) {
+            List<Object> json = new ArrayList<>();
+            json.add(" ");
+            json.add(Msg.button("&o" + claimOption.displayName, claimOption.description, null));
+            String currentValue = claim.getOptions().getOption(claimOption.key);
+            if (currentValue == null) currentValue = claimOption.defaultValue;
+            for (ClaimOption.State state: claimOption.states) {
+                json.add(" ");
+                if (currentValue.equals(state.value)) {
+                    json.add(Msg.button(state.activeColor,
+                                        "&r[" + state.activeColor + state.displayName + "&r]",
+                                        state.description,
+                                        null));
+                } else {
+                    json.add(Msg.button(state.color,
+                                        state.displayName,
+                                        state.description,
+                                        "/claim set " + claimOption.key + " " + state.value));
+                }
+            }
+            sender.tellRaw(json);
+        }
+        sender.sendMessage("");
     }
 
     public boolean trust(@NonNull Player sender, @NonNull TrustType trust, @NonNull String[] args) {

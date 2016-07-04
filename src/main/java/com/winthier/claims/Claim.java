@@ -110,9 +110,7 @@ public final class Claim {
             result.put(Config.PUBLIC_TRUST.key, publicTrustedList);
         }
         result.put(Config.CREATION_TIME.key, creationTime.getTime());
-        if (!options.isEmpty()) {
-            result.put(Config.OPTIONS.key, options.serialize());
-        }
+        result.put(Config.OPTIONS.key, options.serialize());
         if (hasSubclaims()) {
             List<Object> list = new ArrayList<Object>();
             result.put(Config.SUBCLAIMS.key, list);

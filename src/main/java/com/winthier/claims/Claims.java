@@ -21,16 +21,12 @@ import lombok.Getter;
 import lombok.val;
 import org.yaml.snakeyaml.Yaml;
 
+@Getter
 public class Claims {
-    @Getter
-    private static Claims instance;
-    @Getter
+    @Getter private static Claims instance;
     private final ClaimCommand claimCommand = new ClaimCommand(this);
-    @Getter
     private final AdminCommand adminCommand = new AdminCommand(this);
-    @Getter
     private final ClaimAction actions = new ClaimAction(this);
-    @Getter
     private final List<Claim> allClaims = new LinkedList<>();
     private final Map<UUID, PlayerInfo> players = new HashMap<>();
     private Map<Object, Object> playersCache;

@@ -2,9 +2,12 @@ package com.winthier.claims;
 
 import com.winthier.claims.util.Strings;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,26 +29,28 @@ public class ClaimOptions {
         }
     }
 
+    final public static List<ClaimOption> PUBLIC_OPTIONS = Arrays.asList(
+        ClaimOption.booleanOption("pvp", "PvP", "Player vs player combat", "false"),
+        ClaimOption.booleanOption("creeperDamage", "Creeper Damage", "Creeper Explosions break blocks", "false"),
+        ClaimOption.booleanOption("tntDamage", "TNT Damage", "Exploding TNT breaks blocks", "true"),
+        ClaimOption.booleanOption("fireSpread", "Fire Spread", "Player will spread and burn blocks", "false")
+        );
+    
     private Boolean adminClaim = null;
     private Boolean denyEntitySpawn = null;
     @Getter @Setter
     private String comment = null;
     private List<Cuboid> exemptions = new LinkedList<>();
+    final Map<String, String> publicOptions = new HashMap<>();
 
     // Edit all these whenever you add a member
-
-    public boolean isEmpty() {
-        return adminClaim == null &&
-            denyEntitySpawn == null &&
-            comment == null &&
-            exemptions.isEmpty();
-    }
 
     public void copy(ClaimOptions copy) {
         this.adminClaim = copy.adminClaim;
         this.denyEntitySpawn = copy.denyEntitySpawn;
         this.comment = copy.comment;
         for (Cuboid cuboid : copy.exemptions) this.exemptions.add(cuboid);
+        for (Map.Entry<String, String> entry: copy.publicOptions.entrySet()) this.publicOptions.put(entry.getKey(), entry.getValue());
     }
 
     public Map<String, Object> serialize() {
@@ -57,6 +62,9 @@ public class ClaimOptions {
             List<List<Integer>> list = new ArrayList<>();
             for (Cuboid cuboid : exemptions) list.add(cuboid.serialize());
             result.put(Config.EXEMPTIONS.key, list);
+        }
+        for (Map.Entry<String, String> entry: publicOptions.entrySet()) {
+            result.put(entry.getKey(), entry.getValue());
         }
         return result;
     }
@@ -74,6 +82,11 @@ public class ClaimOptions {
         if (map.containsKey(Config.EXEMPTIONS.key)) {
             List<List<Integer>> list = (List<List<Integer>>)map.get(Config.EXEMPTIONS.key);
             for (List<Integer> item : list) exemptions.add(Cuboid.deserialize(item));
+        }
+        for (ClaimOption claimOption: PUBLIC_OPTIONS) {
+            if (map.containsKey(claimOption.key)) {
+                publicOptions.put(claimOption.key, map.get(claimOption.key).toString());
+            }
         }
     }
 
@@ -149,6 +162,14 @@ public class ClaimOptions {
         } break;
         default: throw new CommandException("Not implemented");
         }
+    }
+
+    public void setOption(String key, String value) {
+        publicOptions.put(key, value);
+    }
+
+    public String getOption(String key) {
+        return publicOptions.get(key);
     }
 }
 

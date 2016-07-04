@@ -22,10 +22,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockBurnEvent;
+import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerLeashEntityEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
@@ -546,5 +549,102 @@ public class BukkitEventHandler implements Listener {
                 bp.sendMessage("&3&lClaims&r&o Click with the &a&oGolden Shovel&r&o to check for or edit claims.");
             }
         }.runTaskLater(plugin, 20L);
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
+    public void onEntityExplode(EntityExplodeEvent event) {
+        if (plugin.claims.getWorldBlacklist().contains(event.getEntity().getWorld())) return;
+        Claim claim = plugin.getClaimAt(event.getEntity().getLocation());
+        if (event.getEntity().getType() == EntityType.PRIMED_TNT) {
+            if (claim == null) return;
+            claim = claim.getTopLevelClaim();
+            String option = claim.getOptions().getOption("tntDamage");
+            if (option == null || option.equals("true")) {
+                // Do nothing. TNT is enabled by default
+            } else {
+                event.setCancelled(true);
+            }
+        } else if (event.getEntity().getType() == EntityType.CREEPER) {
+            if (claim == null) {
+                // Creeper damage is disabled by default.
+                event.setCancelled(true);
+                return;
+            }
+            claim = claim.getTopLevelClaim();
+            String option = claim.getOptions().getOption("creeperDamage");
+            if (option == null || option.equals("false")) {
+                event.setCancelled(true);
+                // Creeper damage is disabled by default.
+            } else {
+                // Claim owner wants creeper damage.
+            }
+        } else {
+            return; //?
+        }
+    }
+
+    // Claim Settings
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
+    public void onBlockBurn(BlockBurnEvent event) {
+        if (plugin.claims.getWorldBlacklist().contains(event.getBlock().getWorld())) return;
+        Claim claim = plugin.getClaimAt(event.getBlock().getLocation());
+        if (claim == null) {
+            event.setCancelled(true);
+            return;
+        }
+        claim = claim.getTopLevelClaim();
+        String value = claim.getOptions().getOption("fireSpread");
+        if (value == null || value.equals("false")) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
+    public void onBlockIgnite(BlockIgniteEvent event) {
+        switch (event.getCause()) {
+        case ENDER_CRYSTAL:
+        case EXPLOSION:
+        case FIREBALL:
+        case FLINT_AND_STEEL:
+            return;
+        case LAVA:
+        case LIGHTNING:
+        case SPREAD:
+            // Handle these
+            break;
+        }
+        if (plugin.claims.getWorldBlacklist().contains(event.getBlock().getWorld())) return;
+        Claim claim = plugin.getClaimAt(event.getBlock().getLocation());
+        if (claim == null) {
+            event.setCancelled(true);
+            return;
+        }
+        claim = claim.getTopLevelClaim();
+        String value = claim.getOptions().getOption("fireSpread");
+        if (value == null || value.equals("false")) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
+    public void onEntityDamageByEntityPVP(EntityDamageByEntityEvent event) {
+        if (plugin.claims.getWorldBlacklist().contains(event.getEntity().getWorld())) return;
+        Player damagee = event.getEntity() instanceof Player ? (Player)event.getEntity() : null;
+        if (damagee == null) return;
+        Player damager = getPlayerDamager(event.getDamager());
+        if (damager == null) return;
+        Claim claim = plugin.getClaimAt(event.getEntity().getLocation());
+        if (claim == null) {
+            // PvP is disabled by default
+            event.setCancelled(true);
+            return;
+        }
+        claim = claim.getTopLevelClaim();
+        String value = claim.getOptions().getOption("pvp");
+        if (value == null || value.equals("false")) {
+            // PvP is disabled by default
+            event.setCancelled(true);
+        }
     }
 }
