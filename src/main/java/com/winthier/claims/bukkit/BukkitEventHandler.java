@@ -634,6 +634,7 @@ public class BukkitEventHandler implements Listener {
         if (damagee == null) return;
         Player damager = getPlayerDamager(event.getDamager());
         if (damager == null) return;
+        if (damager.equals(damagee)) return;
         Claim claim = plugin.getClaimAt(event.getEntity().getLocation());
         if (claim == null) {
             // PvP is disabled by default
