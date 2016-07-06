@@ -42,7 +42,7 @@ public class ClaimCommand {
         player.sendMessage("&3&lClaims&r&o Help");
         List<Object> msg = new ArrayList<>();
         msg.add(claims.format("&oInfo"));
-        msgAdd(msg, "List", "View your claims summary", "Claim Me");
+        msgAdd(msg, "List", "View your claims summary", "Claim List");
         msgAdd(msg, "Info", "View info about current claim", "Claim Info");
         msgSend(msg, player);
         msg.add(claims.format("&oCreate"));
