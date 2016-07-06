@@ -71,6 +71,14 @@ public class BukkitClaimsPlugin extends JavaPlugin {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (command.equals(getCommand("claimadmin"))) {
+            if (sender instanceof org.bukkit.entity.Player) {
+                claims.getAdminCommand().command(createPlayer((org.bukkit.entity.Player)sender), args);
+            } else {
+                claims.getAdminCommand().command(BukkitConsolePlayer.instance, args);
+            }
+            return true;
+        }
         if (!(sender instanceof org.bukkit.entity.Player)) {
             sender.sendMessage("Player expected");
             return true;
@@ -88,8 +96,6 @@ public class BukkitClaimsPlugin extends JavaPlugin {
             return claims.getClaimCommand().trust(player, TrustType.PERMISSION, args);
         } else if (command.equals(getCommand("untrust"))) {
             return claims.getClaimCommand().untrust(player, args);
-        } else if (command.equals(getCommand("claimadmin"))) {
-            claims.getAdminCommand().command(player, args);
         } else if (command.equals(getCommand("ignoreclaims"))) {
             claims.getAdminCommand().ignore(player, args);
         } else if (command.equals(getCommand("stuck"))) {
