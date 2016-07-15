@@ -27,6 +27,7 @@ import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityCombustByEntityEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerLeashEntityEvent;
@@ -633,6 +634,28 @@ public class BukkitEventHandler implements Listener {
         Player damagee = event.getEntity() instanceof Player ? (Player)event.getEntity() : null;
         if (damagee == null) return;
         Player damager = getPlayerDamager(event.getDamager());
+        if (damager == null) return;
+        if (damager.equals(damagee)) return;
+        Claim claim = plugin.getClaimAt(event.getEntity().getLocation());
+        if (claim == null) {
+            // PvP is disabled by default
+            event.setCancelled(true);
+            return;
+        }
+        claim = claim.getTopLevelClaim();
+        String value = claim.getOptions().getOption("pvp");
+        if (value == null || value.equals("false")) {
+            // PvP is disabled by default
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
+    public void onEntityCombustByEntityPVP(EntityCombustByEntityEvent event) {
+        if (plugin.claims.getWorldBlacklist().contains(event.getEntity().getWorld())) return;
+        Player damagee = event.getEntity() instanceof Player ? (Player)event.getEntity() : null;
+        if (damagee == null) return;
+        Player damager = getPlayerDamager(event.getCombuster());
         if (damager == null) return;
         if (damager.equals(damagee)) return;
         Claim claim = plugin.getClaimAt(event.getEntity().getLocation());
