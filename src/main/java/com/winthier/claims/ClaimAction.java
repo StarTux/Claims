@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.bukkit.ChatColor;
 
 /**
  * Outsourced from Claims. All these are changes to claims on
@@ -26,7 +27,9 @@ public class ClaimAction {
         PlayerInfo info = PlayerInfo.forPlayer(sender);
         claim.highlightFull(sender);
         sender.sendMessage("");
-        sender.sendMessage("&3&l%s&r&o Info", Strings.upperCaseWord(claim.humanClaimHierarchyType()));
+        sender.tellRaw(
+            Msg.format("&3&l%s&r&o Info ", Strings.upperCaseWord(claim.humanClaimHierarchyType())),
+            Msg.button(ChatColor.GREEN, "&r[&aHelp&r]", "&a/claim help\n&oHelp Screen", "/claim help"));
         sender.sendMessage(" &oOwner&b %s", claim.isAdminClaim() ? "an admin" : claim.getOwnerName());
         sender.sendMessage(" &oCoordinates&b %d&3,&b%d&3 - &b%d&3,&b%d&3", claim.getWestBorder(), claim.getNorthBorder(), claim.getEastBorder(), claim.getSouthBorder());
         if (claim.checkTrust(sender.getUuid(), TrustType.PERMISSION)) {
@@ -41,10 +44,10 @@ public class ClaimAction {
                     List<String> names = claim.getTrustedNames(trust);
                     if (names.isEmpty()) continue;
                     if (!trustedHeader) {
-                        sender.sendMessage("&3Trusted");
+                        sender.sendMessage(" &3Trusted");
                         trustedHeader = true;
                     }
-                    sender.sendMessage("&3&m &3 %s&b %s", Strings.upperCaseWord(trust.human), Strings.fold(names, ", "));
+                    sender.sendMessage(" &3&m &3 %s&b %s", Strings.upperCaseWord(trust.human), Strings.fold(names, ", "));
                 }
             }
             List<Object> json = new ArrayList<>();
@@ -84,7 +87,7 @@ public class ClaimAction {
                 json.add(" ");
                 json.add(Msg.button("&r[&aGrow&r]", "&a/Claim Grow <Amount>\n&a[North|East|South|West]\nExpand this " + claim.humanClaimHierarchyType() + " in any\ndirection.", "/Claim Grow "));
                 json.add(" ");
-                json.add(Msg.button("&r[&aSet&r]", "&a/Claim Set\nChange settings for\nthis " + claim.humanClaimHierarchyType() + ".", "/Claim Set"));
+                json.add(Msg.button("&r[&eSet&r]", "&a/Claim Set\nChange settings for\nthis " + claim.humanClaimHierarchyType() + ".", "/Claim Set"));
                 json.add(" ");
                 json.add(Msg.button("&r[&4Abandon&r]", "&a/Claim Abandon\nAbandon this " + claim.humanClaimHierarchyType() + ".", "/Claim Abandon "));
             }

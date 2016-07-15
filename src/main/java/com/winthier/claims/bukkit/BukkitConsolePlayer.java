@@ -21,7 +21,7 @@ public class BukkitConsolePlayer extends Player {
     public void sendMessage(String msg, Object... args) {
         System.out.println(Msg.format(msg, args));
     }
-    public void tellRaw(Object raw) {}
+    public void tellRaw(Object... raw) {}
     public void showTitle(String title, String sub) {}
     public PlayerInfo info() { return null; }
 }

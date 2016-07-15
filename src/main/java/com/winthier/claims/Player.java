@@ -8,7 +8,7 @@ public abstract class Player {
     public abstract boolean isOp();
     public abstract Location getLocation();
     public abstract void sendMessage(String msg, Object... args);
-    public abstract void tellRaw(Object raw);
+    public abstract void tellRaw(Object... raw);
     public abstract void showTitle(String title, String sub);
 
     public PlayerInfo info() {

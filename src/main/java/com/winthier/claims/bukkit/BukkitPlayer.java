@@ -3,6 +3,7 @@ package com.winthier.claims.bukkit;
 import com.winthier.claims.Claims;
 import com.winthier.claims.Location;
 import com.winthier.claims.Player;
+import com.winthier.claims.util.Msg;
 import java.util.UUID;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
@@ -56,13 +57,10 @@ public class BukkitPlayer extends Player {
     }
 
     @Override
-    public void tellRaw(Object raw) {
+    public void tellRaw(Object... obj) {
         org.bukkit.entity.Player player = getPlayer();
         if (player == null) return;
-        String json = JSONValue.toJSONString(raw);
-        String command = "tellraw " + player.getName() + " " + json;
-        CommandSender sender = Bukkit.getServer().getConsoleSender();
-        Bukkit.getServer().dispatchCommand(sender, command);
+        Msg.raw(player, obj);
     }
 
     @Override
