@@ -95,7 +95,13 @@ public class ClaimCommand {
     }
 
     private void commandPrivate(Player sender, String[] args) {
-        if (false) {
+        if (args.length == 0) {
+            Claim claim = claims.getClaimAt(sender.getLocation());
+            if (claim == null) {
+                usage(sender);
+            } else {
+                claims.getActions().info(sender, claim);
+            }
         } else if (args.length == 1 && args[0].equalsIgnoreCase("Info")) {
             Claim claim = claims.getClaimAt(sender.getLocation());
             if (claim == null) throw new CommandException("Stand in the claim you want to learn more about");
