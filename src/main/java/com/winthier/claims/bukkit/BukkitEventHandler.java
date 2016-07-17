@@ -554,7 +554,7 @@ public class BukkitEventHandler implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onEntityExplode(EntityExplodeEvent event) {
-        if (plugin.claims.getWorldBlacklist().contains(event.getEntity().getWorld())) return;
+        if (plugin.claims.getWorldBlacklist().contains(event.getEntity().getWorld().getName())) return;
         Claim claim = plugin.getClaimAt(event.getEntity().getLocation());
         if (event.getEntity().getType() == EntityType.PRIMED_TNT) {
             if (claim == null) return;
@@ -588,7 +588,7 @@ public class BukkitEventHandler implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onBlockBurn(BlockBurnEvent event) {
-        if (plugin.claims.getWorldBlacklist().contains(event.getBlock().getWorld())) return;
+        if (plugin.claims.getWorldBlacklist().contains(event.getBlock().getWorld().getName())) return;
         Claim claim = plugin.getClaimAt(event.getBlock().getLocation());
         if (claim == null) {
             event.setCancelled(true);
@@ -615,7 +615,7 @@ public class BukkitEventHandler implements Listener {
             // Handle these
             break;
         }
-        if (plugin.claims.getWorldBlacklist().contains(event.getBlock().getWorld())) return;
+        if (plugin.claims.getWorldBlacklist().contains(event.getBlock().getWorld().getName())) return;
         Claim claim = plugin.getClaimAt(event.getBlock().getLocation());
         if (claim == null) {
             event.setCancelled(true);
@@ -630,7 +630,7 @@ public class BukkitEventHandler implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onEntityDamageByEntityPVP(EntityDamageByEntityEvent event) {
-        if (plugin.claims.getWorldBlacklist().contains(event.getEntity().getWorld())) return;
+        if (plugin.claims.getWorldBlacklist().contains(event.getEntity().getWorld().getName())) return;
         Player damagee = event.getEntity() instanceof Player ? (Player)event.getEntity() : null;
         if (damagee == null) return;
         Player damager = getPlayerDamager(event.getDamager());
@@ -652,7 +652,7 @@ public class BukkitEventHandler implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onEntityCombustByEntityPVP(EntityCombustByEntityEvent event) {
-        if (plugin.claims.getWorldBlacklist().contains(event.getEntity().getWorld())) return;
+        if (plugin.claims.getWorldBlacklist().contains(event.getEntity().getWorld().getName())) return;
         Player damagee = event.getEntity() instanceof Player ? (Player)event.getEntity() : null;
         if (damagee == null) return;
         Player damager = getPlayerDamager(event.getCombuster());
