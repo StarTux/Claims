@@ -563,18 +563,18 @@ public class BukkitEventHandler implements Listener {
             if (option == null || option.equals("true")) {
                 // Do nothing. TNT is enabled by default
             } else {
-                event.setCancelled(true);
+                event.blockList().clear();
             }
         } else if (event.getEntity().getType() == EntityType.CREEPER) {
             if (claim == null) {
                 // Creeper damage is disabled by default.
-                event.setCancelled(true);
+                event.blockList().clear();
                 return;
             }
             claim = claim.getTopLevelClaim();
             String option = claim.getOptions().getOption("creeperDamage");
             if (option == null || option.equals("false")) {
-                event.setCancelled(true);
+                event.blockList().clear();
                 // Creeper damage is disabled by default.
             } else {
                 // Claim owner wants creeper damage.
