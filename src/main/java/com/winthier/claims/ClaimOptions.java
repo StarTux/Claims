@@ -32,7 +32,7 @@ public class ClaimOptions {
     final public static List<ClaimOption> PUBLIC_OPTIONS = Arrays.asList(
         ClaimOption.booleanOption("pvp", "PvP", "Player vs player combat", "false"),
         ClaimOption.booleanOption("creeperDamage", "Creeper Damage", "Creeper Explosions break blocks", "false"),
-        ClaimOption.booleanOption("tntDamage", "TNT Damage", "Exploding TNT breaks blocks", "true"),
+        ClaimOption.booleanOption("tntDamage", "TNT Damage", "Exploding TNT breaks blocks", "false"),
         ClaimOption.booleanOption("fireSpread", "Fire Spread", "Fire will spread and burn blocks", "false")
         );
     

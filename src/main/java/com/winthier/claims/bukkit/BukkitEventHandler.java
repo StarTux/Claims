@@ -4,6 +4,7 @@ import com.winthier.claims.Action;
 import com.winthier.claims.Claim;
 import com.winthier.claims.Claims;
 import com.winthier.claims.TrustType;
+import java.util.Iterator;
 import java.util.Set;
 import lombok.val;
 import org.bukkit.Location;
@@ -555,32 +556,31 @@ public class BukkitEventHandler implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onEntityExplode(EntityExplodeEvent event) {
         if (plugin.claims.getWorldBlacklist().contains(event.getEntity().getWorld().getName())) return;
-        Claim claim = plugin.getClaimAt(event.getEntity().getLocation());
-        if (event.getEntity().getType() == EntityType.PRIMED_TNT) {
-            if (claim == null) return;
-            claim = claim.getTopLevelClaim();
-            String option = claim.getOptions().getOption("tntDamage");
-            if (option == null || option.equals("true")) {
-                // Do nothing. TNT is enabled by default
-            } else {
-                event.blockList().clear();
-            }
-        } else if (event.getEntity().getType() == EntityType.CREEPER) {
+        for (Iterator<Block> iter = event.blockList().iterator(); iter.hasNext(); ) {
+            Claim claim = plugin.getClaimAt(iter.next().getLocation());
             if (claim == null) {
-                // Creeper damage is disabled by default.
-                event.blockList().clear();
-                return;
-            }
-            claim = claim.getTopLevelClaim();
-            String option = claim.getOptions().getOption("creeperDamage");
-            if (option == null || option.equals("false")) {
-                event.blockList().clear();
-                // Creeper damage is disabled by default.
+                // Explosion damage is disabled by default.
+                iter.remove();
             } else {
-                // Claim owner wants creeper damage.
+                claim = claim.getTopLevelClaim();
+                if (event.getEntity().getType() == EntityType.PRIMED_TNT) {
+                    String option = claim.getOptions().getOption("tntDamage");
+                    if (option == null || option.equals("false")) {
+                        // TNT is disabled by default.
+                        iter.remove();
+                    } else {
+                        // Claim owner wants TNT damage.
+                    }
+                } else if (event.getEntity().getType() == EntityType.CREEPER) {
+                    String option = claim.getOptions().getOption("creeperDamage");
+                    if (option == null || option.equals("false")) {
+                        event.blockList().clear();
+                        // Creeper damage is disabled by default.
+                    } else {
+                        // Claim owner wants creeper damage.
+                    }
+                }
             }
-        } else {
-            return; //?
         }
     }
 
