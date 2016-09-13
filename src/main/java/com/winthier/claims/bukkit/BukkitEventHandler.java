@@ -9,6 +9,7 @@ import java.util.Set;
 import lombok.val;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Entity;
@@ -74,6 +75,11 @@ public class BukkitEventHandler implements Listener {
         if (!result) cancel.setCancelled(true);
         return result;
     }
+
+    private boolean isWorldBlacklisted(World world) {
+        return plugin.claims.getWorldBlacklist().contains(world.getName());
+    }
+
     /**
      * Utility function to determine whether a player owns an
      * entity. To own an entity, it has to be tameable and the
@@ -555,7 +561,7 @@ public class BukkitEventHandler implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onEntityExplode(EntityExplodeEvent event) {
-        if (plugin.claims.getWorldBlacklist().contains(event.getEntity().getWorld().getName())) return;
+        if (isWorldBlacklisted(event.getEntity().getWorld())) return;
         for (Iterator<Block> iter = event.blockList().iterator(); iter.hasNext(); ) {
             Claim claim = plugin.getClaimAt(iter.next().getLocation());
             if (claim == null) {
@@ -588,7 +594,7 @@ public class BukkitEventHandler implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onBlockBurn(BlockBurnEvent event) {
-        if (plugin.claims.getWorldBlacklist().contains(event.getBlock().getWorld().getName())) return;
+        if (isWorldBlacklisted(event.getBlock().getWorld())) return;
         Claim claim = plugin.getClaimAt(event.getBlock().getLocation());
         if (claim == null) {
             event.setCancelled(true);
@@ -615,7 +621,7 @@ public class BukkitEventHandler implements Listener {
             // Handle these
             break;
         }
-        if (plugin.claims.getWorldBlacklist().contains(event.getBlock().getWorld().getName())) return;
+        if (isWorldBlacklisted(event.getBlock().getWorld())) return;
         Claim claim = plugin.getClaimAt(event.getBlock().getLocation());
         if (claim == null) {
             event.setCancelled(true);
@@ -630,7 +636,7 @@ public class BukkitEventHandler implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onEntityDamageByEntityPVP(EntityDamageByEntityEvent event) {
-        if (plugin.claims.getWorldBlacklist().contains(event.getEntity().getWorld().getName())) return;
+        if (isWorldBlacklisted(event.getEntity().getWorld())) return;
         Player damagee = event.getEntity() instanceof Player ? (Player)event.getEntity() : null;
         if (damagee == null) return;
         Player damager = getPlayerDamager(event.getDamager());
@@ -652,7 +658,7 @@ public class BukkitEventHandler implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onEntityCombustByEntityPVP(EntityCombustByEntityEvent event) {
-        if (plugin.claims.getWorldBlacklist().contains(event.getEntity().getWorld().getName())) return;
+        if (isWorldBlacklisted(event.getEntity().getWorld())) return;
         Player damagee = event.getEntity() instanceof Player ? (Player)event.getEntity() : null;
         if (damagee == null) return;
         Player damager = getPlayerDamager(event.getCombuster());
