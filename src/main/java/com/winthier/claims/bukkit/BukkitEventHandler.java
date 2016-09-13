@@ -574,8 +574,8 @@ public class BukkitEventHandler implements Listener {
                 } else if (event.getEntity().getType() == EntityType.CREEPER) {
                     String option = claim.getOptions().getOption("creeperDamage");
                     if (option == null || option.equals("false")) {
-                        event.blockList().clear();
                         // Creeper damage is disabled by default.
+                        iter.remove();
                     } else {
                         // Claim owner wants creeper damage.
                     }
