@@ -39,7 +39,7 @@ public class ClaimAction {
             boolean trustedHeader = false;
             for (TrustType trust : TrustType.values()) {
                 if (claim.isPublicTrusted(trust)) {
-                    sender.sendMessage("&3&m &3 %s&b * &3(Public)", Strings.upperCaseWord(trust.human));
+                    sender.sendMessage(" &3&m &3 %s&b * &3(Public)", Strings.upperCaseWord(trust.human));
                 } else {
                     List<String> names = claim.getTrustedNames(trust);
                     if (names.isEmpty()) continue;
