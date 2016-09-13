@@ -46,6 +46,8 @@ public class PlayerInfo {
     @Getter @Setter UUID buyClaimBlocksId = null;
     // Info
     @Getter @Setter boolean claimToolReminded = false;
+    @Getter @Setter int unclaimedBlocksPlaced = 0;
+    @Getter @Setter Location lastUnclaimedBlockPlaced;
 
     // Constructors
 

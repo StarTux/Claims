@@ -3,10 +3,13 @@ package com.winthier.claims.bukkit;
 import com.winthier.claims.Action;
 import com.winthier.claims.Claim;
 import com.winthier.claims.Claims;
+import com.winthier.claims.PlayerInfo;
 import com.winthier.claims.TrustType;
+import com.winthier.claims.util.Msg;
 import java.util.Iterator;
 import java.util.Set;
 import lombok.val;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -296,7 +299,34 @@ public class BukkitEventHandler implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onBlockPlace(BlockPlaceEvent event) {
-        autoCheckAction(event.getPlayer(), event.getBlock().getLocation(), Action.BUILD, event);
+        boolean allowed = autoCheckAction(event.getPlayer(), event.getBlock().getLocation(), Action.BUILD, event);
+        // Warn player about block placement in unclaimed areas.
+        if (!allowed) return;
+        if (isWorldBlacklisted(event.getBlock().getWorld())) return;
+        if (plugin.getClaimAt(event.getBlock().getLocation()) != null) return;
+        PlayerInfo info = plugin.claims.getPlayerInfo(event.getPlayer().getUniqueId());
+        int placed = info.getUnclaimedBlocksPlaced();
+        com.winthier.claims.Location oldloc = info.getLastUnclaimedBlockPlaced();
+        com.winthier.claims.Location newloc = plugin.createLocation(event.getBlock());
+        if (oldloc == null || !oldloc.getWorldName().equals(newloc.getWorldName()) || oldloc.distanceSquared(newloc) > 16*16) {
+            placed = 0;
+        } else {
+            placed += 1;
+        }
+        info.setLastUnclaimedBlockPlaced(newloc);
+        if (placed > 16) {
+            info.setUnclaimedBlocksPlaced(0);
+            Msg.raw(event.getPlayer(),
+                    Msg.button(ChatColor.DARK_RED, "&lClaims", "&a/claim\n&oOverview\nLook at the claims menu.", "/claim "),
+                    " ",
+                    Msg.button(ChatColor.RED, "This area is not claimed. Make sure to ", null, null),
+                    Msg.button(ChatColor.RED, "&ncreate", "&a/claim new\n&oCommand\nCreate a new claim here.", "/claim new "),
+                    Msg.button(ChatColor.RED, " or ", null, null),
+                    Msg.button(ChatColor.RED, "&nexpand", "&a/claim grow\n&oCommand\nExpand the claim you're in.", "/claim grow "),
+                    Msg.button(ChatColor.RED, " a claim to protect your build!", null, null));
+        } else {
+            info.setUnclaimedBlocksPlaced(placed);
+        }
     }
 
     // Frost Walker

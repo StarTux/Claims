@@ -30,4 +30,11 @@ public final class Location {
             return 0;
         }
     }
+
+    public int distanceSquared(Location other) {
+        int dx = other.x - x;
+        int dy = other.y - y;
+        int dz = other.z - z;
+        return dx*dx + dy*dy + dz*dz;
+    }
 }
