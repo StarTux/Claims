@@ -8,6 +8,7 @@ import com.winthier.claims.PlayerInfo;
 import com.winthier.claims.TrustType;
 import com.winthier.claims.util.JSON;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -233,6 +234,10 @@ public class BukkitClaimsPlugin extends JavaPlugin {
 
     public Claim getClaimAt(org.bukkit.Location location) {
         return claims.getClaimAt(createLocation(location));
+    }
+
+    public Collection<Claim> findClaimsNear(org.bukkit.Location location, int distance) {
+        return claims.findClaimsNear(createLocation(location), distance);
     }
 
     private Economy getEconomy()

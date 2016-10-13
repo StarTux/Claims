@@ -5,6 +5,7 @@ import com.winthier.claims.util.Strings;
 import com.winthier.playercache.PlayerCache;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import lombok.NonNull;
@@ -100,6 +101,17 @@ public class AdminCommand {
                 player.sendMessage("Starting migration...");
                 com.winthier.claims.util.Legacy.migrate();
                 player.sendMessage("Finished migration...");
+            } else if (args.length >= 1 && args[0].equals("near")) {
+                int distance = 100;
+                if (args.length >= 2) {
+                    distance = Integer.parseInt(args[1]);
+                }
+                Collection<Claim> list = claims.findClaimsNear(player.getLocation(), distance);
+                player.sendMessage("Found " + list.size() + " claims nearby (distance " + distance + " blocks):");
+                for (Claim claim: list) {
+                    player.sendMessage(" Owner: " + claim.getOwnerName());
+                    player.info().highlightClaim(claim);
+                }
             } else {
                 player.sendMessage("&bClaims admin interface usage");
                 player.sendMessage(" &b/ca player <name>&3 Display player info");

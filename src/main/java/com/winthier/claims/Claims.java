@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -370,6 +371,16 @@ public class Claims {
             }
         }
         return null;
+    }
+
+    public Collection<Claim> findClaimsNear(Location location, int distance) {
+        List<Claim> result = new ArrayList<>();
+        for (Claim claim : allClaims) {
+            if (claim.isNear(location, distance)) {
+                result.add(claim);
+            }
+        }
+        return result;
     }
 
     public Claim getClaimAt(String worldName, int x, int y, int z) {

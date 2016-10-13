@@ -280,6 +280,11 @@ public final class Claim {
         return rectangle.contains(location.getX(), location.getZ());
     }
 
+    public boolean isNear(Location location, int distance) {
+        if (!location.getWorldName().equals(world)) return false;
+        return rectangle.isNear(location.getX(), location.getZ(), distance);
+    }
+
     public boolean contains(Claim other) {
         return rectangle.inset(1).contains(other.rectangle);
     }

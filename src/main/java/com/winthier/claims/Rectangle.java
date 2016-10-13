@@ -35,6 +35,12 @@ public class Rectangle {
         return true;
     }
 
+    public boolean isNear(int x, int y, int distance) {
+        if (x < this.x - distance || x >= this.x + this.dx + distance) return false;
+        if (y < this.y - distance || y >= this.y + this.dy + distance) return false;
+        return true;
+    }
+
     public boolean contains(Rectangle other) {
         if (other.x < x || other.x >= x + dx) return false;
         if (other.y < y || other.y >= y + dy) return false;
