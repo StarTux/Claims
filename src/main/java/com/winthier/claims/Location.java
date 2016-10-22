@@ -37,4 +37,10 @@ public final class Location {
         int dz = other.z - z;
         return dx*dx + dy*dy + dz*dz;
     }
+
+    public int horizontalDistanceSquared(Location other) {
+        int dx = other.x - x;
+        int dz = other.z - z;
+        return dx*dx + dz*dz;
+    }
 }

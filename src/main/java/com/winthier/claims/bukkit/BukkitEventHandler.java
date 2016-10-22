@@ -12,6 +12,7 @@ import lombok.val;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.AnimalTamer;
@@ -305,10 +306,11 @@ public class BukkitEventHandler implements Listener {
         if (isWorldBlacklisted(event.getBlock().getWorld())) return;
         if (plugin.getClaimAt(event.getBlock().getLocation()) != null) return;
         PlayerInfo info = plugin.claims.getPlayerInfo(event.getPlayer().getUniqueId());
+        if (info.didGetIt()) return;
         int placed = info.getUnclaimedBlocksPlaced();
         com.winthier.claims.Location oldloc = info.getLastUnclaimedBlockPlaced();
         com.winthier.claims.Location newloc = plugin.createLocation(event.getBlock());
-        if (oldloc == null || !oldloc.getWorldName().equals(newloc.getWorldName()) || oldloc.distanceSquared(newloc) > 16*16) {
+        if (oldloc == null || !oldloc.getWorldName().equals(newloc.getWorldName()) || oldloc.horizontalDistanceSquared(newloc) > 64*64) {
             placed = 0;
         } else {
             placed += 1;
@@ -323,7 +325,10 @@ public class BukkitEventHandler implements Listener {
                     Msg.button(ChatColor.RED, "&ncreate", "&a/claim new\n&oCommand\nCreate a new claim here.", "/claim new "),
                     Msg.button(ChatColor.RED, " or ", null, null),
                     Msg.button(ChatColor.RED, "&nexpand", "&a/claim grow\n&oCommand\nExpand the claim you're in.", "/claim grow "),
-                    Msg.button(ChatColor.RED, " a claim to protect your build!", null, null));
+                    Msg.button(ChatColor.RED, " a claim to protect your build!", null, null),
+                    " ",
+                    Msg.button(ChatColor.GREEN, "&r[&aGot It&r]", "Got it", "/claim gotit"));
+            event.getPlayer().playSound(event.getPlayer().getEyeLocation(), Sound.ENTITY_POLAR_BEAR_WARNING, 1.0f, 1.0f);
         } else {
             info.setUnclaimedBlocksPlaced(placed);
         }

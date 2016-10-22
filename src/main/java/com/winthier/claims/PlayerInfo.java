@@ -48,6 +48,8 @@ public class PlayerInfo {
     @Getter @Setter boolean claimToolReminded = false;
     @Getter @Setter int unclaimedBlocksPlaced = 0;
     @Getter @Setter Location lastUnclaimedBlockPlaced;
+    // Silence Warning
+    private long gotIt = 0;
 
     // Constructors
 
@@ -230,5 +232,13 @@ public class PlayerInfo {
 
     public void save() {
         Claims.getInstance().storePlayerInfo(playerUuid, this);
+    }
+
+    public void setDidGetIt() {
+        gotIt = System.currentTimeMillis() + 1000*60*60;
+    }
+
+    public boolean didGetIt() {
+        return gotIt > System.currentTimeMillis();
     }
 }

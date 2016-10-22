@@ -205,6 +205,11 @@ public class ClaimCommand {
                 }
             }
             showClaimOptions(sender, claim);
+        } else if (args.length == 1 && args[0].equalsIgnoreCase("gotit")) {
+            if (!sender.info().didGetIt()) {
+                sender.info().setDidGetIt();
+                sender.sendMessage("Got it.");
+            }
         } else {
             usage(sender);
         }
