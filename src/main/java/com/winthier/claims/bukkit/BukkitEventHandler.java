@@ -175,6 +175,7 @@ public class BukkitEventHandler implements Listener {
         case CHICKEN:
         case WOLF:
         case OCELOT:
+        case LLAMA:
             return true;
         default:
             return false;
