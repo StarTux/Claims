@@ -15,10 +15,14 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.AnimalTamer;
+import org.bukkit.entity.Animals;
+import org.bukkit.entity.ChestedHorse;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Horse;
+import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Tameable;
@@ -126,7 +130,7 @@ public class BukkitEventHandler implements Listener {
         case GUARDIAN:
             return true;
         default:
-            return false;
+            return e instanceof Monster;
         }
     }
 
@@ -156,13 +160,18 @@ public class BukkitEventHandler implements Listener {
         case OCELOT:
         case IRON_GOLEM:
         case HORSE:
+        case DONKEY:
+        case SKELETON_HORSE:
+        case ZOMBIE_HORSE:
+        case LLAMA:
+        case POLAR_BEAR:
         case RABBIT:
         case VILLAGER:
         case ENDER_CRYSTAL:
             return true;
-        default:
-            return false;
         }
+        if (e instanceof Animals) return true;
+        return false;
     }
 
     private boolean isFarmAnimal(Entity entity) {
@@ -171,11 +180,7 @@ public class BukkitEventHandler implements Listener {
         case SHEEP:
         case RABBIT:
         case PIG:
-        case BAT:
         case CHICKEN:
-        case WOLF:
-        case OCELOT:
-        case LLAMA:
             return true;
         default:
             return false;
@@ -382,8 +387,9 @@ public class BukkitEventHandler implements Listener {
         case ARMOR_STAND:
             autoCheckAction(player, entity.getLocation(), Action.TRANSFORM_ENTITY, event);
             return;
-        case HORSE:
-            Horse horse = (Horse)entity;
+        }
+        if (entity instanceof ChestedHorse) {
+            ChestedHorse horse = (ChestedHorse)entity;
             if (horse.isCarryingChest()) {
                 AnimalTamer owner = horse.getOwner();
                 if (owner == null || !player.getUniqueId().equals(owner.getUniqueId())) {
