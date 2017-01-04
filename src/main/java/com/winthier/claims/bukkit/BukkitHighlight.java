@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.bukkit.Bukkit;
-import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -177,7 +177,7 @@ public class BukkitHighlight implements Highlight {
         if (player == null) return;
         if (!player.getWorld().getName().equals(claim.getWorldName())) return;
         for (Location location : particleLocations) {
-            player.spigot().playEffect(location, Effect.HAPPY_VILLAGER, 0, 0, 0.3f, 0.7f, 0.3f, 0.1f, 16, RADIUS);
+            player.spawnParticle(Particle.VILLAGER_HAPPY, location, 16, 0.3f, 0.7f, 0.3f, 0.1f);
         }
     }
 
