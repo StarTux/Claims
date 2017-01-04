@@ -699,12 +699,23 @@ public class BukkitEventHandler implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
-    public void onEntityCombustByEntityPVP(EntityCombustByEntityEvent event) {
+    public void onEntityCombustByEntity(EntityCombustByEntityEvent event) {
         if (isWorldBlacklisted(event.getEntity().getWorld())) return;
-        Player damagee = event.getEntity() instanceof Player ? (Player)event.getEntity() : null;
-        if (damagee == null) return;
         Player damager = getPlayerDamager(event.getCombuster());
         if (damager == null) return;
+        Player damagee = event.getEntity() instanceof Player ? (Player)event.getEntity() : null;
+        if (damagee == null) {
+            Entity entity = event.getEntity();
+            if (!isProtected(entity)) return;
+            if (isOwner(damager, entity)) return;
+            if (isFarmAnimal(entity)) {
+                autoCheckAction(damager, entity.getLocation(), Action.DAMAGE_FARM_ANIMAL, event);
+            } else {
+                autoCheckAction(damager, entity.getLocation(), Action.DAMAGE_ENTITY, event);
+            }
+            return;
+        }
+        // From here: PvP
         if (damager.equals(damagee)) return;
         Claim claim = plugin.getClaimAt(event.getEntity().getLocation());
         if (claim == null) {
