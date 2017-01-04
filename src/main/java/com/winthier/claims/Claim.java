@@ -214,7 +214,7 @@ public final class Claim {
         }
         if (direction == null) return;
         if (claim.isAdminClaim()) {
-            player.sendMessage("&cYou can type &o/travel&c or walk %d blocks %s to find a place to build.", distance + 1, direction);
+            player.sendMessage("&cYou can type &o/wild&c or walk %d blocks %s to find a place to build.", distance + 1, direction);
         } else {
             player.sendMessage("&cYou can walk %d blocks %s to leave this claim.", distance, direction);
         }
