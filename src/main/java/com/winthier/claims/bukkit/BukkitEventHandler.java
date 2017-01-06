@@ -37,10 +37,12 @@ import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityCombustByEntityEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerLeashEntityEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
@@ -729,5 +731,37 @@ public class BukkitEventHandler implements Listener {
             // PvP is disabled by default
             event.setCancelled(true);
         }
+    }
+
+    @EventHandler(priority = EventPriority.LOW)
+    public void onProjectileHit(ProjectileHitEvent event) {
+        Projectile projectile = event.getEntity();
+        if (!(projectile.getShooter() instanceof Player)) return;
+        Player player = (Player)projectile.getShooter();
+        final Claim claim;
+        if (event.getHitBlock() != null) {
+            if (!autoCheckAction(player, event.getHitBlock().getLocation(), Action.INTERACT_BLOCK)) {
+                projectile.remove();
+            }
+        } else if (event.getHitEntity() != null) {
+            Entity entity = event.getHitEntity();
+            if (isFarmAnimal(entity)) {
+                if (!autoCheckAction(player, entity.getLocation(), Action.DAMAGE_FARM_ANIMAL)) {
+                    projectile.remove();
+                }
+                return;
+            } else {
+                if (!autoCheckAction(player, entity.getLocation(), Action.DAMAGE_ENTITY)) {
+                    projectile.remove();
+                }
+            }
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
+    public void onEntityChangeBlock(EntityChangeBlockEvent event) {
+        Player player = getPlayerDamager(event.getEntity());
+        if (player == null) return;
+        autoCheckAction(player, event.getBlock().getLocation(), Action.BUILD, event);
     }
 }
