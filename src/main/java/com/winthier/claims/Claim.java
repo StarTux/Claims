@@ -203,6 +203,7 @@ public final class Claim {
         while (!checkTrust(player.getUuid(), TrustType.BUILD) && claim.getSuperClaim() != null) claim = claim.getSuperClaim();
         if (claim == null) return;
         Location location = player.getLocation();
+        if (!claim.contains(location)) return;
         CardinalDirection direction = null;
         int distance = Integer.MAX_VALUE;
         for (CardinalDirection dir : CardinalDirection.values()) {
