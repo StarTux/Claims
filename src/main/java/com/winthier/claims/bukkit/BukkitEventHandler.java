@@ -23,6 +23,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Horse;
 import org.bukkit.entity.Monster;
+import org.bukkit.entity.NPC;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Tameable;
@@ -137,43 +138,17 @@ public class BukkitEventHandler implements Listener {
     }
 
     private boolean isProtected(Entity e) {
-        switch (e.getType()) {
-        case LEASH_HITCH:
-        case PAINTING:
-        case ITEM_FRAME:
-        case ARMOR_STAND:
-        case MINECART_COMMAND:
-        case BOAT:
-        case MINECART:
-        case MINECART_CHEST:
-        case MINECART_FURNACE:
-        case MINECART_TNT:
-        case MINECART_HOPPER:
-        case MINECART_MOB_SPAWNER:
-        case BAT:
-        case PIG:
-        case SHEEP:
-        case COW:
-        case CHICKEN:
-        case SQUID:
-        case WOLF:
-        case MUSHROOM_COW:
-        case SNOWMAN:
-        case OCELOT:
-        case IRON_GOLEM:
-        case HORSE:
-        case DONKEY:
-        case SKELETON_HORSE:
-        case ZOMBIE_HORSE:
-        case LLAMA:
-        case POLAR_BEAR:
-        case RABBIT:
-        case VILLAGER:
-        case ENDER_CRYSTAL:
-            return true;
-        }
+        if (e.getCustomName() != null) return true;
         if (e instanceof Animals) return true;
-        return false;
+        if (e instanceof Monster) return false;
+        if (e instanceof NPC) return true;
+        switch (e.getType()) {
+        case ENDER_DRAGON:
+        case SLIME:
+        case MAGMA_CUBE:
+            return false;
+        }
+        return true;
     }
 
     private boolean isFarmAnimal(Entity entity) {
@@ -745,6 +720,7 @@ public class BukkitEventHandler implements Listener {
             }
         } else if (event.getHitEntity() != null) {
             Entity entity = event.getHitEntity();
+            if (!isProtected(entity)) return;
             if (isFarmAnimal(entity)) {
                 if (!autoCheckAction(player, entity.getLocation(), Action.DAMAGE_FARM_ANIMAL)) {
                     projectile.remove();
