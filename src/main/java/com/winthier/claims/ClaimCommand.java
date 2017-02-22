@@ -10,21 +10,20 @@ import java.util.UUID;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.text.WordUtils;
-import org.bukkit.ChatColor;
 
 // TODO clean this up. This file should only parse player
 // input. Any effective work should be done in ClaimActions.
 @RequiredArgsConstructor
-public class ClaimCommand {
+public final class ClaimCommand {
     private final Claims claims;
-    public final static String[] claimSubCommands = { "Me", "Info", "New", "Trust", "Grow", "Sub", "ContainerTrust", "AccessTrust", "PermissionTrust", "Untrust", "Abandon" };
-    public final static int INITIAL_CLAIM_RADIUS = 8;
-    public final static int INITIAL_SUBCLAIM_RADIUS = 8;
+    public static final String[] CLAIM_SUB_COMMANDS = {"Me", "Info", "New", "Trust", "Grow", "Sub", "ContainerTrust", "AccessTrust", "PermissionTrust", "Untrust", "Abandon"};
+    public static final int INITIAL_CLAIM_RADIUS = 8;
+    public static final int INITIAL_SUBCLAIM_RADIUS = 8;
 
     private void msgAdd(List<Object> msg, String title, String description, String command) {
         msgAdd(msg, title, description, command, null, false);
     }
-    
+
     private void msgAdd(List<Object> msg, String title, String description, String command, String syntax, boolean suggest) {
         msg.add(" ");
         description = WordUtils.wrap(description, 32);
@@ -47,7 +46,7 @@ public class ClaimCommand {
         msgSend(msg, player);
         msg.add(claims.format("&oCreate"));
         msgAdd(msg, "New", "Make a new claim", "Claim New");
-        if (claims.allowBuyClaimBlocks) {
+        if (claims.isAllowBuyClaimBlocks()) {
             msgAdd(msg, "Buy", "Buy more claim blocks", "buyclaimblocks", "BuyClaimBlocks <Amount>", true);
         }
         msgAdd(msg, "Grow", "Expand your claim", "Claim Grow", "Claim Grow <Blocks> [North|East|South|West]", true);
@@ -71,7 +70,7 @@ public class ClaimCommand {
         List<String> result = new ArrayList<>();
         if (args.length == 1) {
             String startWith = args[0].toLowerCase();
-            for (String string : claimSubCommands) {
+            for (String string : CLAIM_SUB_COMMANDS) {
                 if (string.toLowerCase().startsWith(startWith)) result.add(string);
             }
         } else {
@@ -138,7 +137,7 @@ public class ClaimCommand {
             int amount = 0;
             try {
                 amount = Integer.parseInt(args[1]);
-            } catch (NumberFormatException nfe) {}
+            } catch (NumberFormatException nfe) { }
             if (amount == 0) throw new CommandException("Amount expected, got: " + amountArg);
             CardinalDirection direction = null;
             if (directionArg != null) {
@@ -273,7 +272,7 @@ public class ClaimCommand {
             return true;
         }
     }
-    
+
     private boolean trust(@NonNull Player sender, @NonNull TrustType trust, @NonNull String playerArg) {
         if (playerArg.equals("*")) {
             return claims.getActions().trustPublic(sender, trust);

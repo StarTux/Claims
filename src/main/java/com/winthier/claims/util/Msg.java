@@ -1,8 +1,6 @@
 package com.winthier.claims.util;
 
 import com.winthier.claims.Claims;
-import com.winthier.claims.bukkit.BukkitClaimsPlugin;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +12,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.json.simple.JSONValue;
 
-public class Msg {
+public final class Msg {
+    private Msg() { }
+
     // TODO remove
     public static boolean send(UUID player, String message, Object... args) {
         return Claims.getInstance().getDelegate().sendMessage(player, message, args);
@@ -41,8 +41,7 @@ public class Msg {
         to.sendMessage(format("&r[&cClaims&r] &c") + format(msg, args));
     }
 
-    static void consoleCommand(String cmd, Object... args)
-    {
+    static void consoleCommand(String cmd, Object... args) {
         if (args.length > 0) cmd = String.format(cmd, args);
         // if (BukkitClaimsPlugin.getInstance().debugMode) {
         //     BukkitClaimsPlugin.getInstance().getLogger().info("Running console command: " + cmd);
@@ -50,8 +49,7 @@ public class Msg {
         Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), cmd);
     }
 
-    public static void raw(Player player, Object... obj)
-    {
+    public static void raw(Player player, Object... obj) {
         if (obj.length == 0) return;
         if (obj.length == 1) {
             consoleCommand("minecraft:tellraw %s %s", player.getName(), JSONValue.toJSONString(obj[0]));

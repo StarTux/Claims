@@ -8,19 +8,22 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 
-public class ClaimOptions {
-    private static enum Config {
+public final class ClaimOptions {
+    private enum Config {
         ADMIN_CLAIM,
         DENY_ENTITY_SPAWN,
         EXEMPTIONS,
-        COMMENT,
-        ;
+        COMMENT;
+
         public final String key;
-        Config() { this.key = name().toLowerCase(); }
+
+        Config() {
+            this.key = name().toLowerCase();
+        }
+
         public static Config fromString(String string) {
             for (Config config : Config.values()) {
                 if (config.key.equalsIgnoreCase(string)) return config;
@@ -29,13 +32,13 @@ public class ClaimOptions {
         }
     }
 
-    final public static List<ClaimOption> PUBLIC_OPTIONS = Arrays.asList(
+    public static final List<ClaimOption> PUBLIC_OPTIONS = Arrays.asList(
         ClaimOption.booleanOption("pvp", "PvP", "Player vs player combat", "false"),
         ClaimOption.booleanOption("creeperDamage", "Creeper Damage", "Creeper Explosions break blocks", "false"),
         ClaimOption.booleanOption("tntDamage", "TNT Damage", "Exploding TNT breaks blocks", "false"),
         ClaimOption.booleanOption("fireSpread", "Fire Spread", "Fire will spread and burn blocks", "false")
         );
-    
+
     private Boolean adminClaim = null;
     private Boolean denyEntitySpawn = null;
     @Getter @Setter
@@ -128,15 +131,15 @@ public class ClaimOptions {
             throw new CommandException(sb.toString());
         }
         switch (config) {
-        case ADMIN_CLAIM: {
+        case ADMIN_CLAIM:
             if (args.length != 2) throw new CommandException("Syntax Error");
             this.adminClaim = Boolean.parseBoolean(args[1]) ? true : null;
-        } break;
-        case DENY_ENTITY_SPAWN: {
+            break;
+        case DENY_ENTITY_SPAWN:
             if (args.length != 2) throw new CommandException("Syntax Error");
             this.denyEntitySpawn = Boolean.parseBoolean(args[1]) ? true : null;
-        } break;
-        case COMMENT: {
+            break;
+        case COMMENT:
             if (args.length >= 2) {
                 List<String> list = new ArrayList<>();
                 for (int i = 1; i < args.length; ++i) list.add(args[i]);
@@ -144,8 +147,8 @@ public class ClaimOptions {
             } else {
                 this.comment = null;
             }
-        }
-        case EXEMPTIONS: {
+            break;
+        case EXEMPTIONS:
             if (args.length != 8) throw new CommandException("Syntax Error");
             if (args[1].equalsIgnoreCase("add")) {
                 int x1 = Integer.parseInt(args[2]);
@@ -159,8 +162,9 @@ public class ClaimOptions {
             } else {
                 throw new CommandException("Syntax Error");
             }
-        } break;
-        default: throw new CommandException("Not implemented");
+            break;
+        default:
+            throw new CommandException("Not implemented: " + config);
         }
     }
 
@@ -176,7 +180,8 @@ public class ClaimOptions {
 // For exemptions
 class Coord {
     public final int x, y, z;
-    public Coord(int x, int y, int z) {
+
+    Coord(int x, int y, int z) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -186,15 +191,18 @@ class Coord {
 // For exemptions
 class Cuboid {
     public final Coord c1, c2;
-    public Cuboid(Coord c1, Coord c2) {
+
+    Cuboid(Coord c1, Coord c2) {
         this.c1 = c1;
         this.c2 = c2;
     }
-    public Cuboid(int x1, int y1, int z1, int x2, int y2, int z2) {
+
+    Cuboid(int x1, int y1, int z1, int x2, int y2, int z2) {
         this(new Coord(Math.min(x1, x2), Math.min(y1, y2), Math.min(z1, z2)),
              new Coord(Math.max(x1, x2), Math.max(y1, y2), Math.max(z1, z2)));
     }
-    public List<Integer> serialize() {
+
+    List<Integer> serialize() {
         List<Integer> result = new ArrayList<>();
         result.add(c1.x);
         result.add(c1.y);
@@ -204,16 +212,19 @@ class Cuboid {
         result.add(c2.z);
         return result;
     }
-    public static Cuboid deserialize(List<Integer> list) {
+
+    static Cuboid deserialize(List<Integer> list) {
         return new Cuboid(list.get(0), list.get(1), list.get(2), list.get(3), list.get(4), list.get(5));
     }
-    public boolean contains(int x, int y, int z) {
+
+    boolean contains(int x, int y, int z) {
         if (x < c1.x || x > c2.x) return false;
         if (y < c1.y || y > c2.y) return false;
         if (z < c1.z || z > c2.z) return false;
         return true;
     }
-    public boolean contains(Location loc) {
+
+    boolean contains(Location loc) {
         return contains(loc.getX(), loc.getY(), loc.getZ());
     }
 }

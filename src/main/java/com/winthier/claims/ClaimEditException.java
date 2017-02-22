@@ -1,14 +1,14 @@
 package com.winthier.claims;
 
-public class ClaimEditException extends Exception {
-    public static enum ErrorType {
+public final class ClaimEditException extends Exception {
+    public enum ErrorType {
         OUT_OF_CLAIM_BLOCKS,
         WORLD_BLACKLISTED,
         CLAIM_TOO_SMALL,
         CLAIM_COLLISION,
         SUBCLAIM_OUT_OF_BOUNDS,
-        CLAIM_EXCLUDES_SUBCLAIMS,
-        ;
+        CLAIM_EXCLUDES_SUBCLAIMS;
+
         public ClaimEditException create() {
             return new ClaimEditException(this);
         }

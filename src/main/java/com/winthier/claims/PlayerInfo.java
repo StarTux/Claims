@@ -1,11 +1,9 @@
 package com.winthier.claims;
 
-import com.winthier.claims.PlayerInfo;
 import com.winthier.claims.util.Strings;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
@@ -15,16 +13,19 @@ import lombok.Setter;
 /**
  * Owner of a PlayerInfo may be offline.
  */
-public class PlayerInfo {
-    private static enum Config {
+public final class PlayerInfo {
+    private enum Config {
         NAME,
         MINUTES_PLAYED,
         CLAIM_BLOCKS,
         MAX_CLAIMS,
-        CREATION_TIME,
-        ;
+        CREATION_TIME;
+
         public final String key;
-        Config() { this.key = name().toLowerCase(); }
+
+        Config() {
+            this.key = name().toLowerCase();
+        }
     }
 
     private final UUID playerUuid;
@@ -42,12 +43,12 @@ public class PlayerInfo {
     @Getter
     private final ClaimTool tool = new ClaimTool();
     // Buy Claim Blocks
-    @Getter @Setter int buyClaimBlocksAmount = 0;
-    @Getter @Setter UUID buyClaimBlocksId = null;
+    @Getter @Setter private int buyClaimBlocksAmount = 0;
+    @Getter @Setter private UUID buyClaimBlocksId = null;
     // Info
-    @Getter @Setter boolean claimToolReminded = false;
-    @Getter @Setter int unclaimedBlocksPlaced = 0;
-    @Getter @Setter Location lastUnclaimedBlockPlaced;
+    @Getter @Setter private boolean claimToolReminded = false;
+    @Getter @Setter private int unclaimedBlocksPlaced = 0;
+    @Getter @Setter private Location lastUnclaimedBlockPlaced;
     // Silence Warning
     private long gotIt = 0;
 
@@ -59,6 +60,7 @@ public class PlayerInfo {
     }
 
     public static PlayerInfo forPlayer(UUID uuid) {
+        if (uuid == null) return null;
         return Claims.getInstance().getPlayerInfo(uuid);
     }
 
@@ -69,7 +71,7 @@ public class PlayerInfo {
     }
 
     // Info
-    
+
     public UUID getUuid() {
         return playerUuid;
     }
@@ -83,18 +85,21 @@ public class PlayerInfo {
     }
 
     // Player Data
-    
+
     public Claim getCurrentClaim() {
         if (currentClaim != null && !currentClaim.isValid()) {
             currentClaim = null;
         }
         return currentClaim;
     }
-    public void setCurrentClaim(Claim currentClaim) { this.currentClaim = currentClaim; }
 
-    public void addClaimBlocks(int claimBlocks) {
-        this.claimBlocks += claimBlocks;
-        if (this.claimBlocks < 0) this.claimBlocks = 0;
+    public void setCurrentClaim(Claim currentClaim) {
+        this.currentClaim = currentClaim;
+    }
+
+    public void addClaimBlocks(int amount) {
+        claimBlocks += amount;
+        if (claimBlocks < 0) claimBlocks = 0;
     }
 
     public int getTotalClaimBlocks() {
@@ -108,7 +113,7 @@ public class PlayerInfo {
     }
 
     // Storage
-    
+
     public Map<String, Object> serialize() {
         Map<String, Object> result = new LinkedHashMap<>();
         if (name != null) result.put(Config.NAME.key, name);
@@ -139,19 +144,9 @@ public class PlayerInfo {
             Claim claim = Claims.getInstance().getClaimAt(player.getLocation());
             if (claim != null) {
                 if (!claim.checkTrust(player.getUuid(), TrustType.BUILD)) {
-                    if (claim.isAdminClaim()) {
-                    //     player.sendMessage("&9Entering an administrator's claim.");
-                    // } else if (claim.isOwner(player.getUuid())) {
-                    //     player.sendMessage("&3Entering your claim. Welcome home.");
-                    } else {
+                    if (!claim.isAdminClaim()) {
                         player.sendMessage("&cEntering %s claim.", Strings.genitive(claim.getOwnerName()));
                     }
-                    // // Highlight
-                    // if (claim.isAdminClaim()) {
-                    //     highlightClaim(claim, Highlight.Type.ADMIN);
-                    // } else {
-                    //     highlightClaim(claim, Highlight.Type.ENEMY);
-                    // }
                 }
                 currentClaim = claim;
             }
@@ -160,11 +155,7 @@ public class PlayerInfo {
                 currentClaim = null;
             } else if (!currentClaim.contains(player.getLocation())) {
                 if (!currentClaim.checkTrust(player.getUuid(), TrustType.BUILD)) {
-                    if (currentClaim.isAdminClaim()) {
-                    //     player.sendMessage("&9Leaving an administrator's claim.");
-                    // } else if (currentClaim.isOwner(player.getUuid())) {
-                    //     player.sendMessage("&3Leaving your claim.");
-                    } else {
+                    if (!currentClaim.isAdminClaim()) {
                         player.sendMessage("&cLeaving %s claim.", Strings.genitive(currentClaim.getOwnerName()));
                     }
                 }
@@ -175,11 +166,21 @@ public class PlayerInfo {
 
     // Admin settings
 
-    public boolean doesIgnoreClaims() { return ignoreClaims; }
-    public void toggleIgnoreClaims() { this.ignoreClaims = !this.ignoreClaims; }
+    public boolean doesIgnoreClaims() {
+        return ignoreClaims;
+    }
 
-    public boolean isDebugMode() { return debug; }
-    public void toggleDebugMode() { this.debug = !this.debug; }
+    public void toggleIgnoreClaims() {
+        this.ignoreClaims = !this.ignoreClaims;
+    }
+
+    public boolean isDebugMode() {
+        return debug;
+    }
+
+    public void toggleDebugMode() {
+        this.debug = !this.debug;
+    }
 
     // Claim Highlight
 
@@ -235,7 +236,7 @@ public class PlayerInfo {
     }
 
     public void setDidGetIt() {
-        gotIt = System.currentTimeMillis() + 1000*60*60;
+        gotIt = System.currentTimeMillis() + 1000 * 60 * 60;
     }
 
     public boolean didGetIt() {

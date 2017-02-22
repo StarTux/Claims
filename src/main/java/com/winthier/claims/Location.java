@@ -14,8 +14,8 @@ public final class Location {
         this.z = z;
     }
 
-    public Location getRelative(int x, int y, int z) {
-        return new Location(worldName, this.x + x, this.y + y, this.z + z);
+    public Location getRelative(int dx, int dy, int dz) {
+        return new Location(worldName, x + dx, y + dy, z + dz);
     }
 
     public int getCoordinate(CardinalDirection direction) {
@@ -35,12 +35,12 @@ public final class Location {
         int dx = other.x - x;
         int dy = other.y - y;
         int dz = other.z - z;
-        return dx*dx + dy*dy + dz*dz;
+        return dx * dx + dy * dy + dz * dz;
     }
 
     public int horizontalDistanceSquared(Location other) {
         int dx = other.x - x;
         int dz = other.z - z;
-        return dx*dx + dz*dz;
+        return dx * dx + dz * dz;
     }
 }

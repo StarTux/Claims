@@ -1,9 +1,11 @@
 package com.winthier.claims.util;
 
-import java.util.UUID;
 import com.winthier.claims.Claims;
+import java.util.UUID;
 
-public class Players {
+public final class Players {
+    private Players() { }
+
     public static UUID getUuid(String name) {
         return Claims.getInstance().getDelegate().getPlayerUuid(name);
     }

@@ -15,13 +15,11 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.ChestedHorse;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Horse;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.NPC;
 import org.bukkit.entity.Player;
@@ -68,7 +66,7 @@ import org.spigotmc.event.entity.EntityMountEvent;
  */
 public class BukkitEventHandler implements Listener {
     private final BukkitClaimsPlugin plugin;
-    private final ItemStack TOOL_ITEM = new ItemStack(Material.GOLD_SPADE);
+    private static final ItemStack TOOL_ITEM = new ItemStack(Material.GOLD_SPADE);
 
     BukkitEventHandler(BukkitClaimsPlugin plugin) {
         this.plugin = plugin;
@@ -88,7 +86,7 @@ public class BukkitEventHandler implements Listener {
     }
 
     private boolean isWorldBlacklisted(World world) {
-        return plugin.claims.getWorldBlacklist().contains(world.getName());
+        return plugin.getClaims().getWorldBlacklist().contains(world.getName());
     }
 
     /**
@@ -147,8 +145,9 @@ public class BukkitEventHandler implements Listener {
         case SLIME:
         case MAGMA_CUBE:
             return false;
+        default:
+            return true;
         }
-        return true;
     }
 
     private boolean isFarmAnimal(Entity entity) {
@@ -261,7 +260,7 @@ public class BukkitEventHandler implements Listener {
             return null;
         }
     }
-    
+
     private Player getPlayerDamager(Entity damager) {
         if (damager instanceof Player) {
             return (Player)damager;
@@ -288,12 +287,12 @@ public class BukkitEventHandler implements Listener {
         if (!allowed) return;
         if (isWorldBlacklisted(event.getBlock().getWorld())) return;
         if (plugin.getClaimAt(event.getBlock().getLocation()) != null) return;
-        PlayerInfo info = plugin.claims.getPlayerInfo(event.getPlayer().getUniqueId());
+        PlayerInfo info = plugin.getClaims().getPlayerInfo(event.getPlayer().getUniqueId());
         if (info.didGetIt()) return;
         int placed = info.getUnclaimedBlocksPlaced();
         com.winthier.claims.Location oldloc = info.getLastUnclaimedBlockPlaced();
         com.winthier.claims.Location newloc = plugin.createLocation(event.getBlock());
-        if (oldloc == null || !oldloc.getWorldName().equals(newloc.getWorldName()) || oldloc.horizontalDistanceSquared(newloc) > 64*64) {
+        if (oldloc == null || !oldloc.getWorldName().equals(newloc.getWorldName()) || oldloc.horizontalDistanceSquared(newloc) > 64 * 64) {
             placed = 0;
         } else {
             placed += 1;
@@ -364,6 +363,8 @@ public class BukkitEventHandler implements Listener {
         case ARMOR_STAND:
             autoCheckAction(player, entity.getLocation(), Action.TRANSFORM_ENTITY, event);
             return;
+        default:
+            break;
         }
         if (entity instanceof ChestedHorse) {
             ChestedHorse horse = (ChestedHorse)entity;
@@ -424,8 +425,9 @@ public class BukkitEventHandler implements Listener {
         case PIG:
             autoCheckAction(player, mount.getLocation(), Action.RIDE_VEHICLE, event);
             return;
+        default:
+            autoCheckAction(player, mount.getLocation(), Action.MOUNT_ENTITY, event);
         }
-        autoCheckAction(player, mount.getLocation(), Action.MOUNT_ENTITY, event);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
@@ -438,8 +440,7 @@ public class BukkitEventHandler implements Listener {
 
     @EventHandler(ignoreCancelled = false, priority = EventPriority.LOWEST)
     public void onPlayerInteractShovel(PlayerInteractEvent event) {
-        if (event.getAction() != org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK &&
-            event.getAction() != org.bukkit.event.block.Action.RIGHT_CLICK_AIR) return;
+        if (event.getAction() != org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK && event.getAction() != org.bukkit.event.block.Action.RIGHT_CLICK_AIR) return;
         if (event.getHand() != EquipmentSlot.HAND) return;
         final Player player = event.getPlayer();
         if (player.getInventory().getItemInMainHand().getType() != Material.GOLD_SPADE) return;
@@ -581,7 +582,7 @@ public class BukkitEventHandler implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onEntityExplode(EntityExplodeEvent event) {
         if (isWorldBlacklisted(event.getEntity().getWorld())) return;
-        for (Iterator<Block> iter = event.blockList().iterator(); iter.hasNext(); ) {
+        for (Iterator<Block> iter = event.blockList().iterator(); iter.hasNext();) {
             Claim claim = plugin.getClaimAt(iter.next().getLocation());
             if (claim == null) {
                 // Explosion damage is disabled by default.
@@ -593,17 +594,15 @@ public class BukkitEventHandler implements Listener {
                     if (option == null || option.equals("false")) {
                         // TNT is disabled by default.
                         iter.remove();
-                    } else {
-                        // Claim owner wants TNT damage.
                     }
+                    // Else claim owner wants TNT damage.
                 } else if (event.getEntity().getType() == EntityType.CREEPER) {
                     String option = claim.getOptions().getOption("creeperDamage");
                     if (option == null || option.equals("false")) {
                         // Creeper damage is disabled by default.
                         iter.remove();
-                    } else {
-                        // Claim owner wants creeper damage.
                     }
+                    // Else claim owner wants creeper damage.
                 }
             }
         }
@@ -637,6 +636,7 @@ public class BukkitEventHandler implements Listener {
         case LAVA:
         case LIGHTNING:
         case SPREAD:
+        default:
             // Handle these
             break;
         }

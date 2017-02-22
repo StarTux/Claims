@@ -8,11 +8,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-public class Strings {
+public final class Strings {
+    private Strings() { }
+
     public static String fold(List<String> items, String token) {
         if (items.isEmpty()) return "";
         StringBuilder sb = new StringBuilder(items.get(0));
-        for (int i = 1 ; i < items.size(); ++i) {
+        for (int i = 1; i < items.size(); ++i) {
             sb.append(token).append(items.get(i));
         }
         return sb.toString();

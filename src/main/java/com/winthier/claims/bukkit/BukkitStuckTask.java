@@ -18,14 +18,14 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 @RequiredArgsConstructor
 class BukkitStuckTask extends BukkitRunnable {
-    private final static long WARMUP = 60L;
-    private final static long COOLDOWN = 60L * 60L;
-    private final static long TICKS = 20L;
+    private static final long WARMUP = 60L;
+    private static final long COOLDOWN = 60L * 60L;
+    private static final long TICKS = 20L;
     private final BukkitClaimsPlugin plugin;
     private final UUID uuid;
     private final Location location;
     private final Claim claim;
-    
+
     @Override
     public void run() {
         portOut();
@@ -51,7 +51,7 @@ class BukkitStuckTask extends BukkitRunnable {
                 Location target = block.getLocation().add(0.5, 0.5, 0.5);
                 plugin.getLogger().info(String.format("[Stuck] teleporting %s to %s %d,%d,%d", player.getName(), target.getWorld().getName(), target.getBlockX(), target.getBlockY(), target.getBlockZ()));
                 player.teleport(target);
-                plugin.stuckCooldowns.put(uuid, new Date(System.currentTimeMillis() + COOLDOWN * 1000L));
+                plugin.getStuckCooldowns().put(uuid, new Date(System.currentTimeMillis() + COOLDOWN * 1000L));
                 return;
             }
         }
@@ -63,7 +63,7 @@ class BukkitStuckTask extends BukkitRunnable {
     }
 
     void cancelTask() {
-        plugin.stucks.remove(uuid);
+        plugin.getStucks().remove(uuid);
         try {
             cancel();
         } catch (IllegalStateException ise) {
@@ -79,19 +79,19 @@ class BukkitStuckTask extends BukkitRunnable {
 
     static boolean onCommand(BukkitClaimsPlugin plugin, Player player) {
         UUID uuid = player.getUniqueId();
-        if (plugin.stucks.containsKey(uuid)) {
-            BukkitStuckTask task = plugin.stucks.get(uuid);
+        if (plugin.getStucks().containsKey(uuid)) {
+            BukkitStuckTask task = plugin.getStucks().get(uuid);
             if (task.moved()) {
                 task.cancelTask();
             } else {
                 throw new CommandException("Stuck is already running. Please be patient.");
             }
         }
-        if (plugin.stuckCooldowns.containsKey(uuid)) {
-            Date cooldown = plugin.stuckCooldowns.get(uuid);
+        if (plugin.getStuckCooldowns().containsKey(uuid)) {
+            Date cooldown = plugin.getStuckCooldowns().get(uuid);
             Date now = new Date();
             if (cooldown.before(now)) {
-                plugin.stuckCooldowns.remove(uuid);
+                plugin.getStuckCooldowns().remove(uuid);
             } else {
                 long delay = (cooldown.getTime() - now.getTime()) / 1000L;
                 throw new CommandException("You are on cooldown for " + Strings.formatSeconds(delay));
@@ -106,7 +106,7 @@ class BukkitStuckTask extends BukkitRunnable {
         }
         while (claim.getSuperClaim() != null && !claim.getSuperClaim().checkTrust(uuid, TrustType.BUILD)) claim = claim.getSuperClaim();
         BukkitStuckTask task = new BukkitStuckTask(plugin, uuid, location, claim);
-        plugin.stucks.put(uuid, task);
+        plugin.getStucks().put(uuid, task);
         task.runTaskLater(plugin, WARMUP * TICKS);
         Msg.send(uuid, "&bWe will port you out of this claim. Please don't move for %d seconds...", WARMUP);
         return true;

@@ -3,7 +3,9 @@ package com.winthier.claims.util;
 import java.util.HashMap;
 import java.util.Map;
 
-public class JSON {
+public final class JSON {
+    private JSON() { }
+
     public static Object commandButton(String label, String tooltip, String command, boolean run) {
         label = Strings.format(label);
         tooltip = Strings.format(tooltip);

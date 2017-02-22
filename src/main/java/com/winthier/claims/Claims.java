@@ -1,13 +1,11 @@
 package com.winthier.claims;
 
-import com.winthier.claims.util.Strings;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,11 +17,10 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import lombok.Getter;
-import lombok.val;
 import org.yaml.snakeyaml.Yaml;
 
 @Getter
-public class Claims {
+public final class Claims {
     @Getter private static Claims instance;
     private final ClaimCommand claimCommand = new ClaimCommand(this);
     private final AdminCommand adminCommand = new AdminCommand(this);
@@ -39,14 +36,14 @@ public class Claims {
     private boolean playersNeedSaving = false;
     private boolean claimsNeedSaving = false;
     private final ConcurrentLinkedQueue<Runnable> asyncTasks = new ConcurrentLinkedQueue<>();
-    public boolean allowBuyClaimBlocks = true;
+    private boolean allowBuyClaimBlocks = true;
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
     public Claims() {
         this.instance = this;
     }
-    
+
     /* Initializing setters* * * * * * * * * * * * * * * * * * */
 
     public void setDelegate(PluginDelegate delegate) {
@@ -81,16 +78,16 @@ public class Claims {
                 info.updateHighlights();
             }
         }
-        List<Player> players = getDelegate().getOnlinePlayers();
+        List<Player> playerList = getDelegate().getOnlinePlayers();
         // Update claims
-        // if (!players.isEmpty()) {
-        //     Player player = players.get(ticks % players.size());
+        // if (!playerList.isEmpty()) {
+        //     Player player = playerList.get(ticks % playerList.size());
         //     PlayerInfo info = getPlayerInfo(player.getUuid());
         //     info.updateCurrentClaim(player);
         // }
         // Give Claim Points
-        if (!players.isEmpty() && ticks % (60 * 20) == 0) {
-            for (Player player : players) {
+        if (!playerList.isEmpty() && ticks % (60 * 20) == 0) {
+            for (Player player : playerList) {
                 UUID uuid = player.getUuid();
                 PlayerInfo info = player.info();
                 info.onLivedOneMinute();
@@ -101,7 +98,11 @@ public class Claims {
     }
 
     public void asyncLoop() {
-        if (!runAsyncTask()) try { Thread.sleep(1000L); } catch (InterruptedException ie) {}
+        if (!runAsyncTask()) {
+            try {
+                Thread.sleep(1000L);
+            } catch (InterruptedException ie) { }
+        }
     }
 
     private synchronized boolean runAsyncTask() {
@@ -124,7 +125,7 @@ public class Claims {
     }
 
     // /* Debug * * * * * * * * * * * * * * * * * * * * * * * * * */
-    
+
     // public void test(Player player) {
     //     Location location = player.getLocation();
     //     int cx = location.getX();
@@ -398,7 +399,7 @@ public class Claims {
     public boolean autoCheckAction(Player player, Location location) {
         return autoCheckAction(player, location, Action.BUILD);
     }
-    
+
     public boolean autoCheckAction(Player player, Location location, Action action) {
         Claim claim = getClaimAt(location);
         if (claim == null) {
@@ -440,7 +441,9 @@ public class Claims {
         return false;
     }
 
-    public boolean doesClaimCollide(Claim claim) { return doesClaimCollide(claim, null); }
+    public boolean doesClaimCollide(Claim claim) {
+        return doesClaimCollide(claim, null);
+    }
 
     /**
      * Return true if the claim is a subclaim and is not within

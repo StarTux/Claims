@@ -10,12 +10,11 @@ import java.util.Set;
 /**
  * Every PlayerInfo should contain an instance of this class
  */
-public class ClaimTool {
-    public static enum State {
+public final class ClaimTool {
+    public enum State {
         INIT,
         NEW,
-        RESIZE,
-        ;
+        RESIZE;
     }
 
     private State state = State.INIT;
@@ -23,50 +22,47 @@ public class ClaimTool {
     private Claim claim = null;
     private final Set<CardinalDirection> directions = EnumSet.noneOf(CardinalDirection.class);
 
-    private void touchInit(Player player, Location location) {
-        Claim claim = Claims.getInstance().getClaimAt(location);
-        if (this.location != null && this.location.equals(location)) {
+    private void touchInit(Player player, Location touchLocation) {
+        Claim oldClaim = Claims.getInstance().getClaimAt(touchLocation);
+        if (location != null && location.equals(touchLocation)) {
             state(State.NEW);
-            Claim oldClaim = Claims.getInstance().getClaimAt(location);
             if (oldClaim == null || oldClaim.isOwner(player.getUuid())) {
                 player.sendMessage("&3&lClaims&r&o Now click the other corner of your desired %s.", oldClaim == null ? "claim" : "subclaim");
                 player.tellRaw(JSON.commandRunButton("&r[&cAbort&r]", "&cAbort claim creation", "/claim tool abort"));
             }
         } else if (claim == null) {
             player.sendMessage("&3&lClaims&r&o No claim here. Click the same block again to make a claim.");
-        } else if (claim.isOwner(player.getUuid()) || PlayerInfo.forPlayer(player).doesIgnoreClaims()) {
-            Set<CardinalDirection> dirs = claim.cornersOfLocation(location);
+        } else if (oldClaim.isOwner(player.getUuid()) || PlayerInfo.forPlayer(player).doesIgnoreClaims()) {
+            Set<CardinalDirection> dirs = oldClaim.cornersOfLocation(touchLocation);
             if (player.info().isClaimHighlighted(claim) && !dirs.isEmpty()) {
                 // A claim border was clicked. Engage resize mode.
                 state(State.RESIZE);
-                this.location = location;
-                this.claim = claim;
+                location = touchLocation;
+                this.claim = oldClaim;
                 this.directions.addAll(dirs);
                 player.info().highlightClaim(claim);
                 List<Object> message = new ArrayList<>();
-                message.add(Strings.format("&3&lClaims&r&o Resizing this " + claim.humanClaimHierarchyType() + ". Right-click a block or click "));
-                message.add(JSON.commandRunButton("&4[abort]", "&4Click to abort\n&4resizing this\n&4" + claim.humanClaimHierarchyType() + ".", "/claim tool abort"));
+                message.add(Strings.format("&3&lClaims&r&o Resizing this " + oldClaim.humanClaimHierarchyType() + ". Right-click a block or click "));
+                message.add(JSON.commandRunButton("&4[abort]", "&4Click to abort\n&4resizing this\n&4" + oldClaim.humanClaimHierarchyType() + ".", "/claim tool abort"));
                 message.add(Strings.format("&o."));
                 player.tellRaw(message);
             }
         } else {
             Claims.getInstance().getActions().info(player, claim);
-            if (claim.checkTrust(player.getUuid(), TrustType.PERMISSION)) {
+            if (oldClaim.checkTrust(player.getUuid(), TrustType.PERMISSION)) {
                 player.sendMessage("&3&lClaims&r&o Click the same block again to make a subclaim.");
             }
         }
-        this.location = location;
+        location = touchLocation;
     }
 
-    private void touchNewClaim(Player player, Location location) {
-        Location locA = this.location;
-        Location locB = location;
-        if (!locA.getWorldName().equals(locB.getWorldName())) {
+    private void touchNewClaim(Player player, Location touchLocation) {
+        if (!location.getWorldName().equals(touchLocation.getWorldName())) {
             state(State.INIT);
             return;
         }
-        Claim newClaim = Claim.newClaim(Rectangle.forCorners(locA, locB), locA.getWorldName(), player.getUuid());
-        Claim superClaim = Claims.getInstance().getClaimAt(locA);
+        Claim newClaim = Claim.newClaim(Rectangle.forCorners(location, touchLocation), location.getWorldName(), player.getUuid());
+        Claim superClaim = Claims.getInstance().getClaimAt(location);
         if (superClaim != null && !superClaim.isOwner(player.getUuid())) {
             player.sendMessage("&3&lClaims&c&o This claim does not belong to you.");
             state(State.INIT);
@@ -94,19 +90,19 @@ public class ClaimTool {
         state(State.INIT);
     }
 
-    private void touchSubclaim(Player player, Location location) {
+    private void touchSubclaim(Player player, Location touchLocation) {
     }
 
-    private void touchResize(Player player, Location location) {
+    private void touchResize(Player player, Location touchLocation) {
         Rectangle rect = this.claim.getRectangle();
         int north = rect.getNorthBorder();
         int east = rect.getEastBorder();
         int south = rect.getSouthBorder();
         int west = rect.getWestBorder();
-        if (this.directions.contains(CardinalDirection.NORTH)) north = location.getZ();
-        if (this.directions.contains(CardinalDirection.EAST)) east = location.getX();
-        if (this.directions.contains(CardinalDirection.SOUTH)) south = location.getZ();
-        if (this.directions.contains(CardinalDirection.WEST)) west = location.getX();
+        if (this.directions.contains(CardinalDirection.NORTH)) north = touchLocation.getZ();
+        if (this.directions.contains(CardinalDirection.EAST)) east = touchLocation.getX();
+        if (this.directions.contains(CardinalDirection.SOUTH)) south = touchLocation.getZ();
+        if (this.directions.contains(CardinalDirection.WEST)) west = touchLocation.getX();
         rect = Rectangle.forNorthEastSouthWest(north, east, south, west);
         try {
             claim = Claims.getInstance().getActions().resizeClaim(player, claim, rect);
@@ -120,11 +116,11 @@ public class ClaimTool {
         reset();
     }
 
-    private void state(State state) {
+    private void state(State newState) {
         reset();
-        this.state = state;
+        state = newState;
     }
-    
+
     // Public interface
 
     /**
@@ -132,15 +128,16 @@ public class ClaimTool {
      * plugin comes with a builtin tool, but you can make other
      * tools with another plugin.
      */
-    public void onTouch(Player player, Location location) {
+    public void onTouch(Player player, Location touchLocation) {
         if (claim != null && !claim.isValid()) {
             reset();
             return;
         }
         switch (state) {
-        case INIT: touchInit(player, location); break;
-        case NEW: touchNewClaim(player, location); break;
-        case RESIZE: touchResize(player, location); break;
+        case INIT: touchInit(player, touchLocation); break;
+        case NEW: touchNewClaim(player, touchLocation); break;
+        case RESIZE: touchResize(player, touchLocation); break;
+        default: throw new IllegalStateException("Unhandled state: " + state);
         }
     }
 

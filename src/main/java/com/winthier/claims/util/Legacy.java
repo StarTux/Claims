@@ -58,11 +58,12 @@ public class Legacy {
         return result;
     }
 
-    private void parseTrustLine(String line, Claim claim, TrustType trust) {
-        String[] tokens = line.split(";");
+    private void parseTrustLine(String trustLine, Claim claim, TrustType trust) {
+        String[] tokens = trustLine.split(";");
         List<UUID> result = new ArrayList<>(tokens.length);
         for (String token : tokens) {
             if (token.isEmpty()) {
+                continue;
             } else if (token.equals("public")) {
                 claim.addPublicTrust(trust);
             } else {
@@ -76,8 +77,7 @@ public class Legacy {
         File dir = new File("plugins/GriefPreventionData/ClaimData");
         LinkedList<String> filenames = new LinkedList<>();
         for (String filename : dir.list()) {
-            if (false) {
-            } else if (pattern3Coords.matcher(filename).matches()) {
+            if (pattern3Coords.matcher(filename).matches()) {
                 filenames.addFirst(filename);
             } else if (pattern2Coords.matcher(filename).matches()) {
                 filenames.addLast(filename);

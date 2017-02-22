@@ -16,12 +16,11 @@ import java.util.UUID;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import static com.winthier.claims.TrustType.*;
 
 @Data
-@EqualsAndHashCode(of={"world", "rectangle"})
+@EqualsAndHashCode(of = {"world", "rectangle"})
 public final class Claim {
-    private static enum Config {
+    private enum Config {
         RECTANGLE,
         WORLD,
         OWNER,
@@ -29,10 +28,13 @@ public final class Claim {
         PUBLIC_TRUST,
         CREATION_TIME,
         OPTIONS,
-        SUBCLAIMS,
-        ;
+        SUBCLAIMS;
+
         public final String key;
-        Config() { this.key = name().toLowerCase(); }
+
+        Config() {
+            this.key = name().toLowerCase();
+        }
     }
 
     // Essential properties
@@ -93,18 +95,18 @@ public final class Claim {
         result.put(Config.RECTANGLE.key, rectangle.serialize());
         result.put(Config.WORLD.key, world);
         result.put(Config.OWNER.key, owner.toString());
-        { // Trusted map
-            boolean anyoneTrusted = false;
-            Map<String, List<String>> trustedMap = new HashMap<>();
-            for (TrustType trust : TrustType.values()) {
-                if (!trusted.get(trust).isEmpty()) {
-                    trustedMap.put(trust.toString(), Strings.serializeUuids(trusted.get(trust)));
-                    anyoneTrusted = true;
-                }
+        // Trusted map
+        boolean anyoneTrusted = false;
+        Map<String, List<String>> trustedMap = new HashMap<>();
+        for (TrustType trust : TrustType.values()) {
+            if (!trusted.get(trust).isEmpty()) {
+                trustedMap.put(trust.toString(), Strings.serializeUuids(trusted.get(trust)));
+                anyoneTrusted = true;
             }
-            if (anyoneTrusted) result.put(Config.TRUSTED.key, trustedMap);
         }
-        if (!publicTrusted.isEmpty() ){ // Public trust map
+        if (anyoneTrusted) result.put(Config.TRUSTED.key, trustedMap);
+        // Public trust map
+        if (!publicTrusted.isEmpty()) {
             List<String> publicTrustedList = new ArrayList<>();
             for (TrustType trust : publicTrusted) publicTrustedList.add(trust.toString());
             result.put(Config.PUBLIC_TRUST.key, publicTrustedList);
@@ -173,13 +175,13 @@ public final class Claim {
         if (PlayerInfo.forPlayer(uuid).doesIgnoreClaims()) return true;
         switch (trust) {
         case BUILD:
-            return hasTrust(uuid, BUILD);
+            return hasTrust(uuid, TrustType.BUILD);
         case CONTAINER:
-            return hasTrust(uuid, BUILD) || hasTrust(uuid, CONTAINER);
+            return hasTrust(uuid, TrustType.BUILD) || hasTrust(uuid, TrustType.CONTAINER);
         case ACCESS:
-            return hasTrust(uuid, BUILD) || hasTrust(uuid, CONTAINER) || hasTrust(uuid, ACCESS);
+            return hasTrust(uuid, TrustType.BUILD) || hasTrust(uuid, TrustType.CONTAINER) || hasTrust(uuid, TrustType.ACCESS);
         case PERMISSION:
-            return hasTrust(uuid, PERMISSION);
+            return hasTrust(uuid, TrustType.PERMISSION);
         default:
             throw new IllegalArgumentException("TrustType not handled: " + trust.name());
         }
@@ -188,7 +190,7 @@ public final class Claim {
     private boolean autoCheckTrust(Player player, TrustType trust) {
         return checkTrust(player.getUuid(), trust);
     }
-    
+
     private boolean autoCheckTrust(Player player, TrustType trust, String message, Object... args) {
         boolean result = autoCheckTrust(player, trust);
         if (!result) {
@@ -240,35 +242,35 @@ public final class Claim {
             return autoCheckTrust(player, TrustType.BUILD);
         case SWITCH_DOOR:
             if (isAdminClaim()) return true;
-            return autoCheckTrust(player, TrustType.ACCESS,"&cThis area belongs to %s", ownerName);
+            return autoCheckTrust(player, TrustType.ACCESS, "&cThis area belongs to %s", ownerName);
         case SWITCH_TRIGGER:
             if (isAdminClaim()) return true;
-            return autoCheckTrust(player, TrustType.ACCESS,"&cThis area belongs to %s", ownerName);
+            return autoCheckTrust(player, TrustType.ACCESS, "&cThis area belongs to %s", ownerName);
         case OPEN_INVENTORY:
             if (isAdminClaim()) return true;
-            return autoCheckTrust(player, TrustType.CONTAINER,"&cThis area belongs to %s", ownerName);
+            return autoCheckTrust(player, TrustType.CONTAINER, "&cThis area belongs to %s", ownerName);
         case DAMAGE_ENTITY:
-            return autoCheckTrust(player, TrustType.BUILD,"&cThis belongs to %s", ownerName);
+            return autoCheckTrust(player, TrustType.BUILD, "&cThis belongs to %s", ownerName);
         case DAMAGE_FARM_ANIMAL:
             if (isAdminClaim()) return true;
-            return autoCheckTrust(player, TrustType.BUILD,"&cThis belongs to %s", ownerName);
+            return autoCheckTrust(player, TrustType.BUILD, "&cThis belongs to %s", ownerName);
         case MOUNT_ENTITY:
             if (isAdminClaim()) return true;
-            return autoCheckTrust(player, TrustType.BUILD,"&cThis belongs to %s", ownerName);
+            return autoCheckTrust(player, TrustType.BUILD, "&cThis belongs to %s", ownerName);
         case RIDE_VEHICLE:
             return true;
         case LEASH_ENTITY:
-            return autoCheckTrust(player, TrustType.ACCESS,"&cThis belongs to %s", ownerName);
+            return autoCheckTrust(player, TrustType.ACCESS, "&cThis belongs to %s", ownerName);
         case SHEAR_ENTITY:
             if (isAdminClaim()) return true;
-            return autoCheckTrust(player, TrustType.ACCESS,"&cThis belongs to %s", ownerName);
+            return autoCheckTrust(player, TrustType.ACCESS, "&cThis belongs to %s", ownerName);
         case TRANSFORM_ENTITY:
-            return autoCheckTrust(player, TrustType.BUILD,"&cThis belongs to %s", ownerName);
+            return autoCheckTrust(player, TrustType.BUILD, "&cThis belongs to %s", ownerName);
         case SLEEP_BED:
             if (isAdminClaim()) return true;
-            return autoCheckTrust(player, TrustType.ACCESS,"&cThis area belongs to %s", ownerName);
+            return autoCheckTrust(player, TrustType.ACCESS, "&cThis area belongs to %s", ownerName);
         case SET_SPAWN:
-            return autoCheckTrust(player, TrustType.BUILD,"&cThis area belongs to %s", ownerName);
+            return autoCheckTrust(player, TrustType.BUILD, "&cThis area belongs to %s", ownerName);
         default:
             System.err.println("Claim.autoCheckAction ignores action: " + action.name());
             return false;
@@ -377,10 +379,22 @@ public final class Claim {
         return true;
     }
 
-    public int getWestBorder() { return rectangle.getWestBorder(); }
-    public int getEastBorder() { return rectangle.getEastBorder(); }
-    public int getNorthBorder() { return rectangle.getNorthBorder(); }
-    public int getSouthBorder() { return rectangle.getSouthBorder(); }
+    public int getWestBorder() {
+        return rectangle.getWestBorder();
+    }
+
+    public int getEastBorder() {
+        return rectangle.getEastBorder();
+    }
+
+    public int getNorthBorder() {
+        return rectangle.getNorthBorder();
+    }
+
+    public int getSouthBorder() {
+        return rectangle.getSouthBorder();
+    }
+
     public int getBorder(CardinalDirection direction) {
         switch (direction) {
         case NORTH: return getNorthBorder();
@@ -391,10 +405,17 @@ public final class Claim {
         }
     }
 
-    public int getWidth() { return rectangle.getWidth(); }
-    public int getHeight() { return rectangle.getHeight(); }
+    public int getWidth() {
+        return rectangle.getWidth();
+    }
 
-    public String getWorldName() { return world; }
+    public int getHeight() {
+        return rectangle.getHeight();
+    }
+
+    public String getWorldName() {
+        return world;
+    }
 
     public boolean doBlocksCount() {
         if (hasSuperClaim()) return false;

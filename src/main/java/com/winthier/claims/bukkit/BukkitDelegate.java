@@ -1,10 +1,8 @@
 package com.winthier.claims.bukkit;
 
 import com.winthier.claims.Claim;
-import com.winthier.claims.Claims;
 import com.winthier.claims.Highlight;
 import com.winthier.claims.Player;
-import com.winthier.claims.PlayerInfo;
 import com.winthier.claims.PluginDelegate;
 import com.winthier.playercache.PlayerCache;
 import java.io.File;
@@ -20,7 +18,7 @@ public class BukkitDelegate implements PluginDelegate {
     public BukkitDelegate(BukkitClaimsPlugin plugin) {
         this.plugin = plugin;
     }
-    
+
     @Override
     public File getDataFolder() {
         File result = plugin.getDataFolder();

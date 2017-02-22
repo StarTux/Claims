@@ -2,7 +2,6 @@ package com.winthier.claims;
 
 import com.winthier.claims.util.Players;
 import com.winthier.claims.util.Strings;
-import com.winthier.playercache.PlayerCache;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -12,16 +11,12 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class AdminCommand {
+public final class AdminCommand {
     private final Claims claims;
 
     public void command(Player player, String[] args) {
         try {
-            if (false) {
-                // } else if (args.length == 1 && args[0].equalsIgnoreCase("test")) {
-                //     test(player);
-                //     player.sendMessage("&eTest done");
-            } else if (args.length == 1 && args[0].equalsIgnoreCase("load")) {
+            if (args.length == 1 && args[0].equalsIgnoreCase("load")) {
                 claims.loadConfig();
                 claims.loadClaims();
                 claims.loadPlayers();

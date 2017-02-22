@@ -11,7 +11,7 @@ public abstract class Player {
     public abstract void tellRaw(Object... raw);
     public abstract void showTitle(String title, String sub);
 
-    public PlayerInfo info() {
+    public final PlayerInfo info() {
         return PlayerInfo.forPlayer(getUuid());
     }
 }

@@ -5,7 +5,7 @@ import java.util.Map;
 import lombok.Data;
 
 @Data
-public class Rectangle {
+public final class Rectangle {
     private final int x; // left
     private final int y; // top
 
@@ -22,30 +22,30 @@ public class Rectangle {
     public static Rectangle forNorthEastSouthWest(int north, int east, int south, int west) {
         return new Rectangle(west, north, east - west + 1, south - north + 1);
     }
-    
+
     public boolean intersects(Rectangle other) {
         if (x + dx - 1 < other.x || x >= other.x + other.dx) return false;
         if (y + dy - 1 < other.y || y >= other.y + other.dy) return false;
         return true;
     }
 
-    public boolean contains(int x, int y) {
-        if (x < this.x || x >= this.x + this.dx) return false;
-        if (y < this.y || y >= this.y + this.dy) return false;
+    public boolean contains(int px, int py) {
+        if (px < this.x || px >= this.x + this.dx) return false;
+        if (py < this.y || py >= this.y + this.dy) return false;
         return true;
     }
 
-    public boolean isNear(int x, int y, int distance) {
-        if (x < this.x - distance || x >= this.x + this.dx + distance) return false;
-        if (y < this.y - distance || y >= this.y + this.dy + distance) return false;
+    public boolean isNear(int px, int py, int distance) {
+        if (px < this.x - distance || px >= this.x + this.dx + distance) return false;
+        if (py < this.y - distance || py >= this.y + this.dy + distance) return false;
         return true;
     }
 
     public boolean contains(Rectangle other) {
         if (other.x < x || other.x >= x + dx) return false;
         if (other.y < y || other.y >= y + dy) return false;
-        if (other.x + other.dx -1 >= x + dx) return false;
-        if (other.y + other.dy -1 >= y + dy) return false;
+        if (other.x + other.dx - 1 >= x + dx) return false;
+        if (other.y + other.dy - 1 >= y + dy) return false;
         return true;
     }
 
@@ -81,48 +81,66 @@ public class Rectangle {
         return dx * dy;
     }
 
-    public int getWestBorder() { return x; }
-    public int getEastBorder() { return x + dx - 1; }
-    public int getNorthBorder() { return y; }
-    public int getSouthBorder() { return y + dy - 1; }
+    public int getWestBorder() {
+        return x;
+    }
 
-    public int getWidth() { return dx; }
-    public int getHeight() { return dy; }
+    public int getEastBorder() {
+        return x + dx - 1;
+    }
+
+    public int getNorthBorder() {
+        return y;
+    }
+
+    public int getSouthBorder() {
+        return y + dy - 1;
+    }
+
+    public int getWidth() {
+        return dx;
+    }
+
+    public int getHeight() {
+        return dy;
+    }
 
     public Rectangle expand(int amount, CardinalDirection direction) {
-        int x = this.x;
-        int y = this.y;
-        int dx = this.dx;
-        int dy = this.dy;
+        int nx = this.x;
+        int ny = this.y;
+        int ndx = this.dx;
+        int ndy = this.dy;
         switch (direction) {
         case NORTH:
-            y -= amount;
+            ny -= amount;
         case SOUTH:
-            dy += amount;
+            ndy += amount;
             break;
         case WEST:
-            x -= amount;
+            nx -= amount;
         case EAST:
-            dx += amount;
+            ndx += amount;
             break;
+        default:
+            throw new IllegalArgumentException("Unknown CardinalDirection: " + direction);
         }
-        return new Rectangle(x, y, dx, dy);
+        return new Rectangle(nx, ny, ndx, ndy);
     }
 
     public Rectangle outset(int amount) {
-        int x = this.x - amount;
-        int y = this.y - amount;
-        int dx = this.dx + amount + amount;
-        int dy = this.dy + amount + amount;
-        return new Rectangle(x, y, dx, dy);
+        int nx = this.x - amount;
+        int ny = this.y - amount;
+        int ndx = this.dx + amount + amount;
+        int ndy = this.dy + amount + amount;
+        return new Rectangle(nx, ny, ndx, ndy);
     }
 
     public Rectangle inset(int amount) {
-        int x = this.x + amount;
-        int y = this.y + amount;
-        int dx = Math.max(1, this.dx - amount - amount);
-        int dy = Math.max(1, this.dy - amount - amount);
-        return new Rectangle(x, y, dx, dy);
+        int nx = this.x + amount;
+        int ny = this.y + amount;
+        int ndx = Math.max(1, this.dx - amount - amount);
+        int ndy = Math.max(1, this.dy - amount - amount);
+        return new Rectangle(nx, ny, ndx, ndy);
     }
 
     @Override

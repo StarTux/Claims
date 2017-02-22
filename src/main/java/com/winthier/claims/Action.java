@@ -12,7 +12,7 @@ public enum Action {
     SLEEP_BED,
     INTERACT_BLOCK,
     INTERACT_ENTITY,
-    
+
     SWITCH_DOOR,
     OPEN_INVENTORY,
     SET_SPAWN,
@@ -24,6 +24,5 @@ public enum Action {
     SHEAR_ENTITY,
     TRANSFORM_ENTITY, // Shear a mooshroom, use armor stand
 
-    DAMAGE_FARM_ANIMAL,
-    ;
+    DAMAGE_FARM_ANIMAL;
 }

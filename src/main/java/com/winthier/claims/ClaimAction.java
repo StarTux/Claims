@@ -1,6 +1,5 @@
 package com.winthier.claims;
 
-import com.winthier.claims.util.JSON;
 import com.winthier.claims.util.Msg;
 import com.winthier.claims.util.Players;
 import com.winthier.claims.util.Strings;
@@ -17,7 +16,7 @@ import org.bukkit.ChatColor;
  * message.
  */
 @RequiredArgsConstructor
-public class ClaimAction {
+public final class ClaimAction {
     private final Claims claims;
 
     /*
@@ -150,8 +149,7 @@ public class ClaimAction {
             if (!claim.checkTrust(sender.getUuid(), trust)) continue;
             if (claim.removeTrusted(trustee, trust)) wasTrusted = true;
         }
-        
-        if (!wasTrusted) throw new CommandException("Player not trusted: " + Players.getName(trustee));        
+        if (!wasTrusted) throw new CommandException("Player not trusted: " + Players.getName(trustee));
         sender.sendMessage("&3&lClaims&r&o Removed %s permission in this claim.", Strings.genitive(Players.getName(trustee)));
         return true;
     }
@@ -170,7 +168,7 @@ public class ClaimAction {
         sender.sendMessage("&3&lClaims&r&o Removed public trust from this claim.");
         return true;
     }
-    
+
     public void grow(Player sender, Claim oldClaim, CardinalDirection direction, int amount) {
         Rectangle rectangle = direction == null ? oldClaim.getRectangle().outset(amount) : oldClaim.getRectangle().expand(amount, direction);
         Claim newClaim = null;

@@ -4,8 +4,7 @@ public enum CardinalDirection {
     NORTH,
     EAST,
     SOUTH,
-    WEST,
-    ;
+    WEST;
 
     public static CardinalDirection fromString(String string) {
         string = string.toUpperCase();

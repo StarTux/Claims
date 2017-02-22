@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -24,18 +25,19 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class BukkitClaimsPlugin extends JavaPlugin {
-    Claims claims;
+@Getter
+public final class BukkitClaimsPlugin extends JavaPlugin {
+    private Claims claims;
     private BukkitRunnable task;
     private BukkitRunnable asyncTask;
     private BukkitEventHandler eventHandler;
     private Map<UUID, BukkitPlayer> playerMap = new HashMap<>();
     private boolean disabled = false;
-    Map<UUID, BukkitStuckTask> stucks = new HashMap<>();
-    Map<UUID, Date> stuckCooldowns = new HashMap<>();
+    private Map<UUID, BukkitStuckTask> stucks = new HashMap<>();
+    private Map<UUID, Date> stuckCooldowns = new HashMap<>();
     private Economy economy = null;
-    private final double PRICE_PER_CLAIM_BLOCK = 0.1;
-    
+    private static final double PRICE_PER_CLAIM_BLOCK = 0.1;
+
     /* Setup routines  * * * * * * * * * * * * * * * * * * * * */
 
     @Override
@@ -76,7 +78,7 @@ public class BukkitClaimsPlugin extends JavaPlugin {
             if (sender instanceof org.bukkit.entity.Player) {
                 claims.getAdminCommand().command(createPlayer((org.bukkit.entity.Player)sender), args);
             } else {
-                claims.getAdminCommand().command(BukkitConsolePlayer.instance, args);
+                claims.getAdminCommand().command(BukkitConsolePlayer.INSTANCE, args);
             }
             return true;
         }
@@ -106,7 +108,7 @@ public class BukkitClaimsPlugin extends JavaPlugin {
                 player.sendMessage("" + ChatColor.RED + ce.getMessage());
             }
         } else if (command.equals(getCommand("buyclaimblocks"))) {
-            if (args.length == 0 || !claims.allowBuyClaimBlocks) {
+            if (args.length == 0 || !claims.isAllowBuyClaimBlocks()) {
                 return false;
             } else if ("confirm".equalsIgnoreCase(args[0]) && args.length == 2) {
                 PlayerInfo info = player.info();
@@ -169,7 +171,6 @@ public class BukkitClaimsPlugin extends JavaPlugin {
                 msg.add(" ");
                 msg.add(JSON.commandRunButton("&r[&cCancel&r]", "&cCancel\nForget about this transaction", "/buyclaimblocks cancel"));
                 player.tellRaw(msg);
-            } else if (args.length == 2 && args[0].equals("confirm")) {
             } else {
                 return false;
             }
@@ -204,7 +205,7 @@ public class BukkitClaimsPlugin extends JavaPlugin {
         final int x = bukkitLocation.getBlockX();
         final int y = bukkitLocation.getBlockY();
         final int z = bukkitLocation.getBlockZ();
-        return new Location(world, x, y ,z);
+        return new Location(world, x, y, z);
     }
 
     public Location createLocation(org.bukkit.block.Block block) {
@@ -212,7 +213,7 @@ public class BukkitClaimsPlugin extends JavaPlugin {
         final int x = block.getX();
         final int y = block.getY();
         final int z = block.getZ();
-        return new Location(world, x, y ,z);
+        return new Location(world, x, y, z);
     }
 
     public org.bukkit.Location createBukkitLocation(Location location) {
@@ -240,8 +241,7 @@ public class BukkitClaimsPlugin extends JavaPlugin {
         return claims.findClaimsNear(createLocation(location), distance);
     }
 
-    private Economy getEconomy()
-    {
+    private Economy getEconomy() {
         if (economy == null) {
             RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(Economy.class);
             if (economyProvider != null) economy = economyProvider.getProvider();

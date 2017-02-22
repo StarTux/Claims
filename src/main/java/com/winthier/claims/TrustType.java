@@ -8,8 +8,7 @@ public enum TrustType {
     BUILD,
     CONTAINER,
     ACCESS,
-    PERMISSION,
-    ;
+    PERMISSION;
 
     public final String human;
 

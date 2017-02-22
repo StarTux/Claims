@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.UUID;
 
 public interface PluginDelegate {
-    public File getDataFolder();
-    public String getPlayerName(UUID uuid);
-    public UUID getPlayerUuid(String name);
-    public List<Player> getOnlinePlayers();
-    public Highlight createHighlight(UUID playerUuid, Claim claim, Highlight.Type type);
-    public String format(String string, Object... args);
-    public boolean sendMessage(UUID uuid, String message, Object... args);
+    File getDataFolder();
+    String getPlayerName(UUID uuid);
+    UUID getPlayerUuid(String name);
+    List<Player> getOnlinePlayers();
+    Highlight createHighlight(UUID playerUuid, Claim claim, Highlight.Type type);
+    String format(String string, Object... args);
+    boolean sendMessage(UUID uuid, String message, Object... args);
 }

@@ -12,9 +12,9 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
-public class BukkitHighlight implements Highlight {
-    private final static int DISTANCE = 5;
-    private final static int RADIUS = 3 * 16;
+public final class BukkitHighlight implements Highlight {
+    private static final int DISTANCE = 5;
+    private static final int RADIUS = 3 * 16;
     private final UUID playerUuid;
     private final Claim claim;
     private final Type type;
