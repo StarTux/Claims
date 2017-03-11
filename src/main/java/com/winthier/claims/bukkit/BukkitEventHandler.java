@@ -328,21 +328,35 @@ public class BukkitEventHandler implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (isWorldBlacklisted(event.getEntity().getWorld())) return;
         // Get entity
         final Entity entity = event.getEntity();
         if (!isProtected(entity)) return;
         // Get player
         final Player player = getPlayerDamager(event.getDamager());
-        if (player == null) return;
-        // Check ownership
-        if (isOwner(player, entity)) return;
-        // Animals are special
-        if (isFarmAnimal(entity)) {
-            autoCheckAction(player, entity.getLocation(), Action.DAMAGE_FARM_ANIMAL, event);
-            return;
+        if (player != null) {
+            // Check ownership
+            if (isOwner(player, entity)) return;
+            // Animals are special
+            if (isFarmAnimal(entity)) {
+                autoCheckAction(player, entity.getLocation(), Action.DAMAGE_FARM_ANIMAL, event);
+                return;
+            }
+            // Auto check action
+            autoCheckAction(player, entity.getLocation(), Action.DAMAGE_ENTITY, event);
+        } else {
+            Claim claim = plugin.getClaimAt(entity.getLocation());
+            EntityType et = event.getDamager().getType();
+            if (et == EntityType.PRIMED_TNT) {
+                if (claim == null || claim.getTopLevelClaim().shouldDenyTNTDamage()) {
+                    event.setCancelled(true);
+                }
+            } else if (et == EntityType.CREEPER) {
+                if (claim == null || claim.getTopLevelClaim().shouldDenyCreeperDamage()) {
+                    event.setCancelled(true);
+                }
+            }
         }
-        // Auto check action
-        autoCheckAction(player, entity.getLocation(), Action.DAMAGE_ENTITY, event);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
@@ -519,9 +533,23 @@ public class BukkitEventHandler implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onHangingBreakByEntity(HangingBreakByEntityEvent event) {
-        if (!(event.getRemover() instanceof Player)) return;
-        final Player player = (Player)event.getRemover();
-        autoCheckAction(player, event.getEntity().getLocation(), Action.BUILD, event);
+        if (isWorldBlacklisted(event.getEntity().getWorld())) return;
+        if (event.getRemover() instanceof Player) {
+            final Player player = (Player)event.getRemover();
+            autoCheckAction(player, event.getEntity().getLocation(), Action.BUILD, event);
+        } else {
+            Claim claim = plugin.getClaimAt(event.getEntity().getLocation());
+            EntityType et = event.getRemover().getType();
+            if (et == EntityType.PRIMED_TNT) {
+                if (claim == null || claim.getTopLevelClaim().shouldDenyTNTDamage()) {
+                    event.setCancelled(true);
+                }
+            } else if (et == EntityType.CREEPER) {
+                if (claim == null || claim.getTopLevelClaim().shouldDenyCreeperDamage()) {
+                    event.setCancelled(true);
+                }
+            }
+        }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
@@ -590,19 +618,13 @@ public class BukkitEventHandler implements Listener {
             } else {
                 claim = claim.getTopLevelClaim();
                 if (event.getEntity().getType() == EntityType.PRIMED_TNT) {
-                    String option = claim.getOptions().getOption("tntDamage");
-                    if (option == null || option.equals("false")) {
-                        // TNT is disabled by default.
+                    if (claim.shouldDenyTNTDamage()) {
                         iter.remove();
                     }
-                    // Else claim owner wants TNT damage.
                 } else if (event.getEntity().getType() == EntityType.CREEPER) {
-                    String option = claim.getOptions().getOption("creeperDamage");
-                    if (option == null || option.equals("false")) {
-                        // Creeper damage is disabled by default.
+                    if (claim.shouldDenyCreeperDamage()) {
                         iter.remove();
                     }
-                    // Else claim owner wants creeper damage.
                 }
             }
         }
