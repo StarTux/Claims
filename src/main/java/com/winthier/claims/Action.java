@@ -15,6 +15,7 @@ public enum Action {
 
     SWITCH_DOOR,
     OPEN_INVENTORY,
+    ACCESS_ANVIL,
     SET_SPAWN,
 
     DAMAGE_ENTITY,

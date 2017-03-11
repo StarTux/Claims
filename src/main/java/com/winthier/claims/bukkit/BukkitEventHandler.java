@@ -206,7 +206,6 @@ public class BukkitEventHandler implements Listener {
         case DIODE_BLOCK_ON:
         case REDSTONE_COMPARATOR_ON:
         case REDSTONE_COMPARATOR_OFF:
-        case ANVIL:
         case TNT:
         case DRAGON_EGG:
         case JUKEBOX:
@@ -223,6 +222,8 @@ public class BukkitEventHandler implements Listener {
         case SIGN_POST:
         case WALL_SIGN:
             return Action.NONE;
+        case ANVIL:
+            return Action.ACCESS_ANVIL;
         default:
             return null;
         }

@@ -248,6 +248,7 @@ public final class Claim {
             return autoCheckTrust(player, TrustType.ACCESS, "&cThis area belongs to %s", ownerName);
         case OPEN_INVENTORY:
             if (isAdminClaim()) return true;
+        case ACCESS_ANVIL:
             return autoCheckTrust(player, TrustType.CONTAINER, "&cThis area belongs to %s", ownerName);
         case DAMAGE_ENTITY:
             return autoCheckTrust(player, TrustType.BUILD, "&cThis belongs to %s", ownerName);
