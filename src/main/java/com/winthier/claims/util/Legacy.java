@@ -53,7 +53,6 @@ public class Legacy {
 
     private UUID findUuid(String name) {
         UUID result = PlayerCache.uuidForName(name);
-        if (result == null) result = PlayerCache.uuidForLegacyName(name);
         if (result == null) System.err.println(String.format("UUID not found for name: '%s' in %s, line %d", name, currentFile, in.getLineNumber()));
         return result;
     }
