@@ -105,7 +105,8 @@ public final class ClaimAction {
     public boolean trust(Player sender, TrustType trust, UUID trustee) {
         Claim claim = claims.getClaimAt(sender.getLocation());
         if (claim == null) throw new CommandException("Stand in your claim to give people trust in it");
-        if (trust == TrustType.PERMISSION) {
+        boolean ignore = sender.info().doesIgnoreClaims();
+        if (!ignore && trust == TrustType.PERMISSION) {
             // Only owners can give permission trust
             if (!claim.isOwner(sender.getUuid())) throw new CommandException("This claim does not belong to you.");
         } else {
@@ -121,7 +122,8 @@ public final class ClaimAction {
     public boolean trustPublic(Player sender, TrustType trust) {
         Claim claim = claims.getClaimAt(sender.getLocation());
         if (claim == null) throw new CommandException("Stand in your claim to give people trust in it");
-        if (trust == TrustType.PERMISSION) {
+        boolean ignore = sender.info().doesIgnoreClaims();
+        if (!ignore && trust == TrustType.PERMISSION) {
             // Only owners can give permission trust
             if (!claim.isOwner(sender.getUuid())) throw new CommandException("This claim does not belong to you.");
         } else {
@@ -130,7 +132,7 @@ public final class ClaimAction {
             if (!claim.checkTrust(sender.getUuid(), trust)) throw new CommandException("You must have " + trust.human + " trust yourself to do this");
         }
         // Only owners can trust public
-        if (!claim.isOwner(sender.getUuid())) throw new CommandException("This claim does not belong to you.");
+        if (!ignore && !claim.isOwner(sender.getUuid())) throw new CommandException("This claim does not belong to you.");
         if (!claim.addPublicTrust(trust)) throw new CommandException("Public " + trust.human + " trust already granted");
         sender.sendMessage("&3&lClaims&r&o Gave %s trust to public in this %s", trust.human, claim.humanClaimHierarchyType());
         return true;
@@ -142,7 +144,8 @@ public final class ClaimAction {
     public boolean untrust(Player sender, UUID trustee) {
         Claim claim = claims.getClaimAt(sender.getLocation());
         if (claim == null) throw new CommandException("Stand in your claim to untrust people in it");
-        if (!claim.checkTrust(sender.getUuid(), TrustType.PERMISSION)) throw new CommandException("This claim does not belong to you");
+        boolean ignore = sender.info().doesIgnoreClaims();
+        if (!ignore && !claim.checkTrust(sender.getUuid(), TrustType.PERMISSION)) throw new CommandException("This claim does not belong to you");
         boolean wasTrusted = false;
         for (TrustType trust : TrustType.values()) {
             if (trust == TrustType.PERMISSION && !claim.isOwner(sender.getUuid())) continue;
@@ -157,9 +160,10 @@ public final class ClaimAction {
     public boolean untrustPublic(Player sender) {
         Claim claim = claims.getClaimAt(sender.getLocation());
         if (claim == null) throw new CommandException("Stand in your claim to untrust people in it");
-        if (!claim.checkTrust(sender.getUuid(), TrustType.PERMISSION)) throw new CommandException("This claim does not belong to you");
+        boolean ignore = sender.info().doesIgnoreClaims();
+        if (!ignore && !claim.checkTrust(sender.getUuid(), TrustType.PERMISSION)) throw new CommandException("This claim does not belong to you");
         // Only owners can trust public
-        if (!claim.isOwner(sender.getUuid())) throw new CommandException("This claim does not belong to you.");
+        if (!ignore && !claim.isOwner(sender.getUuid())) throw new CommandException("This claim does not belong to you.");
         boolean wasTrusted = false;
         for (TrustType trust : TrustType.values()) {
             if (claim.removePublicTrust(trust)) wasTrusted = true;
