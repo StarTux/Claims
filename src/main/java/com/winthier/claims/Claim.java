@@ -515,4 +515,22 @@ public final class Claim {
         }
         return result;
     }
+
+    public boolean shouldDenyCreeperDamage() {
+        String option = getOptions().getOption("creeperDamage");
+        if (option == null || option.equals("false")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean shouldDenyTNTDamage() {
+        String option = getOptions().getOption("tntDamage");
+        if (option == null || option.equals("false")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

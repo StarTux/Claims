@@ -2,7 +2,6 @@ package com.winthier.claims.bukkit;
 
 import com.winthier.claims.Location;
 import com.winthier.claims.Player;
-import com.winthier.claims.PlayerInfo;
 import com.winthier.claims.util.Msg;
 import java.util.UUID;
 import lombok.Getter;
