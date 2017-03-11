@@ -194,7 +194,8 @@ public final class ClaimCommand {
             Claim claim = claims.getClaimAt(sender.getLocation());
             if (claim == null) throw new CommandException("Stand in the claim you would like to configure");
             claim = claim.getTopLevelClaim();
-            if (!claim.isOwner(sender.getUuid())) throw new CommandException("The top level claim does not belong to you");
+            boolean ignore = sender.info().doesIgnoreClaims();
+            if (!ignore && !claim.isOwner(sender.getUuid())) throw new CommandException("The top level claim does not belong to you");
             if (args.length == 3) {
                 String optionKey = args[1];
                 String optionValue = args[2];
