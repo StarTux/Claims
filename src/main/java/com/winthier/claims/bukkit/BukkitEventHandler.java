@@ -346,14 +346,16 @@ public class BukkitEventHandler implements Listener {
             // Auto check action
             autoCheckAction(player, entity.getLocation(), Action.DAMAGE_ENTITY, event);
         } else {
+            if (entity instanceof Player) return;
             Claim claim = plugin.getClaimAt(entity.getLocation());
+            if (claim == null) return;
             EntityType et = event.getDamager().getType();
             if (et == EntityType.PRIMED_TNT) {
-                if (claim == null || claim.getTopLevelClaim().shouldDenyTNTDamage()) {
+                if (claim.getTopLevelClaim().shouldDenyTNTDamage()) {
                     event.setCancelled(true);
                 }
             } else if (et == EntityType.CREEPER) {
-                if (claim == null || claim.getTopLevelClaim().shouldDenyCreeperDamage()) {
+                if (claim.getTopLevelClaim().shouldDenyCreeperDamage()) {
                     event.setCancelled(true);
                 }
             }
