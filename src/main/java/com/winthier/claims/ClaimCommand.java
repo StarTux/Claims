@@ -120,6 +120,7 @@ public final class ClaimCommand {
             Location location = sender.getLocation();
             Claim superClaim = claims.getClaimAt(location);
             if (superClaim == null) throw new CommandException("Stand inside your claim to make a subclaim");
+            if (!superClaim.checkTrust(sender.getUuid(), TrustType.PERMISSION)) throw new CommandException("You don't have permission trust in this claim!");
             Rectangle rectangle = new Rectangle(location.getX() - INITIAL_SUBCLAIM_RADIUS, location.getZ() - INITIAL_SUBCLAIM_RADIUS, INITIAL_SUBCLAIM_RADIUS * 2 + 1, INITIAL_SUBCLAIM_RADIUS * 2 + 1);
             try {
                 Claim subclaim = claims.getActions().makeSubclaim(sender, superClaim, rectangle, location.getWorldName());
