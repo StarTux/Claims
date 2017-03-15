@@ -519,11 +519,7 @@ public final class Claim {
 
     public boolean shouldDenyCreeperDamage() {
         String option = getOptions().getOption("creeperDamage");
-        if (option == null || option.equals("false")) {
-            return true;
-        } else {
-            return false;
-        }
+        return option == null || option.equals("false");
     }
 
     public boolean shouldDenyTNTDamage() {
