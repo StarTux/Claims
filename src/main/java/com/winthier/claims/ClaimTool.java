@@ -30,17 +30,17 @@ public final class ClaimTool {
                 player.sendMessage("&3&lClaims&r&o Now click the other corner of your desired %s.", oldClaim == null ? "claim" : "subclaim");
                 player.tellRaw(JSON.commandRunButton("&r[&cAbort&r]", "&cAbort claim creation", "/claim tool abort"));
             }
-        } else if (claim == null) {
+        } else if (oldClaim == null) {
             player.sendMessage("&3&lClaims&r&o No claim here. Click the same block again to make a claim.");
         } else if (oldClaim.isOwner(player.getUuid()) || PlayerInfo.forPlayer(player).doesIgnoreClaims()) {
             Set<CardinalDirection> dirs = oldClaim.cornersOfLocation(touchLocation);
-            if (player.info().isClaimHighlighted(claim) && !dirs.isEmpty()) {
+            if (player.info().isClaimHighlighted(oldClaim) && !dirs.isEmpty()) {
                 // A claim border was clicked. Engage resize mode.
                 state(State.RESIZE);
                 location = touchLocation;
                 this.claim = oldClaim;
                 this.directions.addAll(dirs);
-                player.info().highlightClaim(claim);
+                player.info().highlightClaim(oldClaim);
                 List<Object> message = new ArrayList<>();
                 message.add(Strings.format("&3&lClaims&r&o Resizing this " + oldClaim.humanClaimHierarchyType() + ". Right-click a block or click "));
                 message.add(JSON.commandRunButton("&4[abort]", "&4Click to abort\n&4resizing this\n&4" + oldClaim.humanClaimHierarchyType() + ".", "/claim tool abort"));
@@ -48,7 +48,7 @@ public final class ClaimTool {
                 player.tellRaw(message);
             }
         } else {
-            Claims.getInstance().getActions().info(player, claim);
+            Claims.getInstance().getActions().info(player, oldClaim);
             if (oldClaim.checkTrust(player.getUuid(), TrustType.PERMISSION)) {
                 player.sendMessage("&3&lClaims&r&o Click the same block again to make a subclaim.");
             }
