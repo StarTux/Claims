@@ -44,6 +44,7 @@ public final class GenericEventsHandler implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public void onPlayerCanDamageEntity(PlayerCanDamageEntityEvent event) {
         if (isWorldBlacklisted(event.getEntity().getWorld())) return;
+        if (!BukkitEventHandler.isProtected(event.getEntity())) return;
         final Claim claim = plugin.getClaimAt(event.getEntity().getLocation());
         if (claim == null) return;
         if (event.getEntity() instanceof Player) {

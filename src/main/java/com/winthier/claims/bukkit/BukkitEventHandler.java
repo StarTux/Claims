@@ -135,7 +135,7 @@ public class BukkitEventHandler implements Listener {
         }
     }
 
-    private boolean isProtected(Entity e) {
+    static boolean isProtected(Entity e) {
         if (e.getCustomName() != null) return true;
         if (e instanceof Animals) return true;
         if (e instanceof Monster) return false;
