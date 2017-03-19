@@ -20,7 +20,7 @@ public final class GenericEventsHandler implements Listener {
         return plugin.getClaims().getWorldBlacklist().contains(world.getName());
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public void onPlayerCanBuild(PlayerCanBuildEvent event) {
         if (isWorldBlacklisted(event.getBlock().getWorld())) return;
         final Claim claim = plugin.getClaimAt(event.getBlock());
@@ -29,7 +29,7 @@ public final class GenericEventsHandler implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public void onPlayerCanGrief(PlayerCanGriefEvent event) {
         if (isWorldBlacklisted(event.getBlock().getWorld())) return;
         final Claim claim = plugin.getClaimAt(event.getBlock());
@@ -41,7 +41,7 @@ public final class GenericEventsHandler implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public void onPlayerCanDamageEntity(PlayerCanDamageEntityEvent event) {
         if (isWorldBlacklisted(event.getEntity().getWorld())) return;
         final Claim claim = plugin.getClaimAt(event.getEntity().getLocation());
