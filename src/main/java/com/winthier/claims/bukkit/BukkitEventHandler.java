@@ -99,7 +99,7 @@ public class BukkitEventHandler implements Listener {
      * @arg entity the entity
      * @return true if player owns entity, false otherwise
      */
-    private static boolean isOwner(Player player, Entity entity) {
+    static boolean isOwner(Player player, Entity entity) {
         if (!(entity instanceof Tameable)) return false;
         Tameable tameable = (Tameable)entity;
         if (!tameable.isTamed()) return false;
@@ -150,7 +150,7 @@ public class BukkitEventHandler implements Listener {
         }
     }
 
-    private boolean isFarmAnimal(Entity entity) {
+    static boolean isFarmAnimal(Entity entity) {
         switch (entity.getType()) {
         case COW:
         case SHEEP:

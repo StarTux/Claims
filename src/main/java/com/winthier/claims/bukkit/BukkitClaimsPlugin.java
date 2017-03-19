@@ -31,6 +31,7 @@ public final class BukkitClaimsPlugin extends JavaPlugin {
     private BukkitRunnable task;
     private BukkitRunnable asyncTask;
     private BukkitEventHandler eventHandler;
+    private GenericEventsHandler genericEventsHandler;
     private Map<UUID, BukkitPlayer> playerMap = new HashMap<>();
     private boolean disabled = false;
     private Map<UUID, BukkitStuckTask> stucks = new HashMap<>();
@@ -63,6 +64,10 @@ public final class BukkitClaimsPlugin extends JavaPlugin {
         asyncTask.runTaskAsynchronously(this);
         this.eventHandler = new BukkitEventHandler(this);
         getServer().getPluginManager().registerEvents(eventHandler, this);
+        if (getServer().getPluginManager().getPlugin("GenericEvents") != null) {
+            genericEventsHandler = new GenericEventsHandler(this);
+            getServer().getPluginManager().registerEvents(genericEventsHandler, this);
+        }
     }
 
     @Override
@@ -235,6 +240,10 @@ public final class BukkitClaimsPlugin extends JavaPlugin {
 
     public Claim getClaimAt(org.bukkit.Location location) {
         return claims.getClaimAt(createLocation(location));
+    }
+
+    public Claim getClaimAt(org.bukkit.block.Block block) {
+        return claims.getClaimAt(createLocation(block));
     }
 
     public Collection<Claim> findClaimsNear(org.bukkit.Location location, int distance) {

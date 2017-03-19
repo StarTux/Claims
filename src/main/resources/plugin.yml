@@ -4,6 +4,7 @@ author: StarTux
 version: 0.1
 main: com.winthier.claims.bukkit.BukkitClaimsPlugin
 depend: [ PlayerCache, Vault ]
+softdepend: [ GenericEvents ]
 commands:
   claim:
     aliases: [ c, claims ]
