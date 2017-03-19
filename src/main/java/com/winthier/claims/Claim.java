@@ -524,10 +524,6 @@ public final class Claim {
 
     public boolean shouldDenyTNTDamage() {
         String option = getOptions().getOption("tntDamage");
-        if (option == null || option.equals("false")) {
-            return true;
-        } else {
-            return false;
-        }
+        return option == null || option.equals("false");
     }
 }
