@@ -350,7 +350,7 @@ public class BukkitEventHandler implements Listener {
             Claim claim = plugin.getClaimAt(entity.getLocation());
             if (claim == null) return;
             EntityType et = event.getDamager().getType();
-            if (et == EntityType.PRIMED_TNT) {
+            if (et == EntityType.PRIMED_TNT || et == EntityType.MINECART_TNT) {
                 if (claim.getTopLevelClaim().shouldDenyTNTDamage()) {
                     event.setCancelled(true);
                 }
@@ -543,7 +543,7 @@ public class BukkitEventHandler implements Listener {
         } else {
             Claim claim = plugin.getClaimAt(event.getEntity().getLocation());
             EntityType et = event.getRemover().getType();
-            if (et == EntityType.PRIMED_TNT) {
+            if (et == EntityType.PRIMED_TNT || et == EntityType.MINECART_TNT) {
                 if (claim == null || claim.getTopLevelClaim().shouldDenyTNTDamage()) {
                     event.setCancelled(true);
                 }
@@ -620,11 +620,12 @@ public class BukkitEventHandler implements Listener {
                 iter.remove();
             } else {
                 claim = claim.getTopLevelClaim();
-                if (event.getEntity().getType() == EntityType.PRIMED_TNT) {
+                EntityType et = event.getEntity().getType();
+                if (et == EntityType.PRIMED_TNT || et == EntityType.MINECART_TNT) {
                     if (claim.shouldDenyTNTDamage()) {
                         iter.remove();
                     }
-                } else if (event.getEntity().getType() == EntityType.CREEPER) {
+                } else if (et == EntityType.CREEPER) {
                     if (claim.shouldDenyCreeperDamage()) {
                         iter.remove();
                     }
