@@ -73,5 +73,3 @@ permissions:
   claims.admin:
     description: Use the admin interface
     default: op
-    children:
-      claims.ignore: true
