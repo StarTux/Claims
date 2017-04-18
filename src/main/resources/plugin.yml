@@ -55,7 +55,7 @@ commands:
       /<command> <amount>
   ignoreclaims:
     description: Give permission trust
-    permission: claims.claim
+    permission: claims.ignore
     usage: |-
       /<command> - toggle ignore claims
       /<command> on|off - turn ignore claims on or off
@@ -73,3 +73,5 @@ permissions:
   claims.admin:
     description: Use the admin interface
     default: op
+    children:
+      claims.ignore: true
