@@ -204,23 +204,7 @@ public final class Claim {
         Claim claim = this;
         while (!checkTrust(player.getUuid(), TrustType.BUILD) && claim.getSuperClaim() != null) claim = claim.getSuperClaim();
         if (claim == null) return;
-        Location location = player.getLocation();
-        if (!claim.contains(location)) return;
-        CardinalDirection direction = null;
-        int distance = Integer.MAX_VALUE;
-        for (CardinalDirection dir : CardinalDirection.values()) {
-            int dist = Math.abs(claim.getBorder(dir) - location.getCoordinate(dir));
-            if (dist < distance) {
-                distance = dist;
-                direction = dir;
-            }
-        }
-        if (direction == null) return;
-        if (claim.isAdminClaim()) {
-            player.sendMessage("&cYou can type &o/wild&c or walk %d blocks %s to find a place to build.", distance + 1, direction);
-        } else {
-            player.sendMessage("&cYou can walk %d blocks %s to leave this claim.", distance, direction);
-        }
+        player.sendMessage("&cYou can type &o/build&c to find a place to build.");
     }
 
     public boolean autoCheckAction(Player player, Location location, Action action) {
