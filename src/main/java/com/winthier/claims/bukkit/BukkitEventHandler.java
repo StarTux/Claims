@@ -43,6 +43,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerLeashEntityEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
@@ -531,6 +532,18 @@ public class BukkitEventHandler implements Listener {
                 autoCheckAction(player, block.getLocation(), action, event);
                 return;
             }
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
+    public void onHangingBreak(HangingBreakEvent event) {
+        if (isWorldBlacklisted(event.getEntity().getWorld())) return;
+        switch (event.getCause()) {
+        case EXPLOSION:
+            event.setCancelled(true);
+            break;
+        default:
+            break;
         }
     }
 
