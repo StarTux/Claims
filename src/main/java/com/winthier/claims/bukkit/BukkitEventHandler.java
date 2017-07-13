@@ -776,7 +776,11 @@ public class BukkitEventHandler implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onEntityChangeBlock(EntityChangeBlockEvent event) {
         Player player = getPlayerDamager(event.getEntity());
-        if (player == null) return;
-        autoCheckAction(player, event.getBlock().getLocation(), Action.BUILD, event);
+        if (player != null) {
+            autoCheckAction(player, event.getBlock().getLocation(), Action.BUILD, event);
+        } else if (event.getEntity().getType() == EntityType.ENDERMAN) {
+            if (isWorldBlacklisted(event.getEntity().getWorld())) return;
+            event.setCancelled(true);
+        }
     }
 }
