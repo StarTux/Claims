@@ -350,15 +350,24 @@ public class BukkitEventHandler implements Listener {
             if (entity instanceof Player) return;
             Claim claim = plugin.getClaimAt(entity.getLocation());
             if (claim == null) return;
-            EntityType et = event.getDamager().getType();
-            if (et == EntityType.PRIMED_TNT || et == EntityType.MINECART_TNT) {
+            switch (event.getDamager().getType()) {
+            case PRIMED_TNT:
+            case MINECART_TNT:
                 if (claim.getTopLevelClaim().shouldDenyTNTDamage()) {
                     event.setCancelled(true);
                 }
-            } else if (et == EntityType.CREEPER) {
+                break;
+            case CREEPER:
                 if (claim.getTopLevelClaim().shouldDenyCreeperDamage()) {
                     event.setCancelled(true);
                 }
+                break;
+            default:
+                // Target is protected.  Damage source was not
+                // initiated by a player.  This means we always
+                // protect the target, such as armor stands or item
+                // frames, right?
+                event.setCancelled(true);
             }
         }
     }
@@ -542,6 +551,11 @@ public class BukkitEventHandler implements Listener {
         case EXPLOSION:
             event.setCancelled(true);
             break;
+        case ENTITY:
+            if (!(event instanceof HangingBreakByEntityEvent)) {
+                event.setCancelled(true);
+            }
+            break;
         default:
             break;
         }
@@ -564,6 +578,8 @@ public class BukkitEventHandler implements Listener {
                 if (claim == null || claim.getTopLevelClaim().shouldDenyCreeperDamage()) {
                     event.setCancelled(true);
                 }
+            } else {
+                event.setCancelled(true);
             }
         }
     }
