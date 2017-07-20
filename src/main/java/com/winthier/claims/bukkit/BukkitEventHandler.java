@@ -253,6 +253,7 @@ public class BukkitEventHandler implements Listener {
     private Action getLeftClickAction(Block block) {
         switch (block.getType()) {
         case DRAGON_EGG:
+        case FIRE:
             return Action.BUILD;
         case NOTE_BLOCK:
         case SIGN_POST:
