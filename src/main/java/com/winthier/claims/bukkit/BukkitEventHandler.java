@@ -377,6 +377,7 @@ public class BukkitEventHandler implements Listener {
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         final Player player = event.getPlayer();
         final Entity entity = event.getRightClicked();
+        if (isOwner(player, entity)) return;
         switch (entity.getType()) {
         case PIG:
         case BOAT:
