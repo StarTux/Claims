@@ -20,6 +20,7 @@ import org.bukkit.entity.Animals;
 import org.bukkit.entity.ChestedHorse;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.NPC;
 import org.bukkit.entity.Player;
@@ -368,7 +369,9 @@ public class BukkitEventHandler implements Listener {
                 // initiated by a player.  This means we always
                 // protect the target, such as armor stands or item
                 // frames, right?
-                event.setCancelled(true);
+                if (entity.getType() == EntityType.ARMOR_STAND || !(entity instanceof LivingEntity)) {
+                    event.setCancelled(true);
+                }
             }
         }
     }
