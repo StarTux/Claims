@@ -56,6 +56,8 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
+import org.bukkit.event.vehicle.VehicleDamageEvent;
+import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -373,6 +375,24 @@ public class BukkitEventHandler implements Listener {
                     event.setCancelled(true);
                 }
             }
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
+    public void onVehicleDamage(VehicleDamageEvent event) {
+        if (isWorldBlacklisted(event.getVehicle().getWorld())) return;
+        Player player = getPlayerDamager(event.getAttacker());
+        if (player != null) {
+            autoCheckAction(player, event.getVehicle().getLocation(), Action.DAMAGE_ENTITY, event);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
+    public void onVehicleDestroy(VehicleDestroyEvent event) {
+        if (isWorldBlacklisted(event.getVehicle().getWorld())) return;
+        Player player = getPlayerDamager(event.getAttacker());
+        if (player != null) {
+            autoCheckAction(player, event.getVehicle().getLocation(), Action.DAMAGE_ENTITY, event);
         }
     }
 
